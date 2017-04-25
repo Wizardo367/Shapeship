@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.SettingsActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/settingsScreenView"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/background_0"
+        android:scaleType="fitXY"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="SETTINGS"
+            android:id="@+id/titleText"
+            android:textColor="#000000"
+            android:textSize="35dp"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/background_bar"
+            android:layout_weight="0.05"
+            android:gravity="center"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Music"
+            android:textColor="#ffffff"
+            android:id="@+id/musicText"
+            android:layout_marginTop="30dp"
+            android:layout_marginLeft="40dp"
+            android:gravity="bottom"/>
+
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/musicVolume"
+            android:layout_weight="0.2"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:progress="100"
+            android:layout_marginTop="-30dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Sound Effects"
+            android:textColor="#ffffff"
+            android:id="@+id/sfxText"
+
+            android:layout_marginLeft="40dp"
+            android:gravity="bottom"/>
+
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/sfxVolume"
+            android:layout_weight="0.2"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:progress="100"
+            android:layout_marginTop="-30dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Use the options above to adjust the game’s settings to your liking. Once you have done so press the button below to return to the main menu."
+            android:id="@+id/helpText"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="25dp"
+            android:layout_marginRight="25dp"
+            android:gravity="bottom"
+            android:textAlignment="center"
+            android:textColor="#ffffff"
+            android:layout_weight="0.45"
+            android:textIsSelectable="false"
+            android:textSize="18dp"/>
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/return_button"
+            android:layout_weight="0.1"
+            android:src="@drawable/return_button"
+            android:scaleType="fitStart"
+            android:layout_marginLeft="15dp"
+            android:layout_marginBottom="10dp"
+            android:paddingTop="25dp"
+            android:onClick="returnToMenu"/>
+
+    </LinearLayout>
+
+</RelativeLayout>

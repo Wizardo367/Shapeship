@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".activities.MenuActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/menuScreenView"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/background_0"
+        android:scaleType="fitXY"/>
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="SHAPESHIP"
+            android:id="@+id/titleText"
+            android:layout_centerHorizontal="true"
+            android:textColor="#ffffff"
+            android:textSize="35dp"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:layout_weight="0.2"
+            android:layout_marginTop="50dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="HIGH SCORE"
+            android:textColor="#bc0202"
+            android:id="@+id/highScoreTitle"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_weight="0.05"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="000000"
+            android:id="@+id/scoreText"
+            android:layout_alignBottom="@+id/imageView"
+            android:layout_centerHorizontal="true"
+            android:textColor="#ffffff"
+            android:layout_gravity="center_horizontal"
+            android:gravity="center"
+            android:layout_weight="0.05"/>
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/imageView2"
+            android:layout_weight="0.4"
+            android:src="@drawable/shapeship"
+            android:layout_marginTop="35dp"/>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="1"
+            android:layout_weight="0.3"
+            android:gravity="bottom">
+
+            <ImageView
+                android:onClick="showHelp"
+                android:layout_width="60dp"
+                android:layout_height="80dp"
+                android:id="@+id/helpButton"
+                android:src="@drawable/help_button"
+                android:layout_alignTop="@+id/playButton"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="50dp"
+                android:layout_weight="0.2"
+                android:layout_marginBottom="40dp"/>
+
+            <ImageView
+                android:onClick="startGame"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:id="@+id/playButton"
+                android:layout_marginBottom="40dp"
+                android:src="@drawable/play_button"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_weight="0.6"
+                />
+
+            <ImageView
+                android:onClick="showSettings"
+                android:layout_width="60dp"
+                android:layout_height="80dp"
+                android:id="@+id/settingsButton"
+                android:src="@drawable/settings_button"
+                android:layout_alignTop="@+id/playButton"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginRight="50dp"
+                android:layout_weight="0.2"
+                android:layout_marginBottom="40dp"/>
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

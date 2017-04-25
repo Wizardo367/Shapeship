@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    tools:context=".activities.SplashActivity">
+
+    <ImageView
+        android:onClick="showMenu"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/splashScreenView"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/background_0"
+        android:scaleType="fitXY"
+        />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:weightSum="1">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/shapeshipImage"
+            android:src="@drawable/shapeship"
+            android:layout_centerHorizontal="true"
+            android:layout_weight="0.7"
+            android:layout_gravity="center_horizontal"
+            android:scaleType="fitEnd"
+            android:paddingBottom="75dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="SHAPESHIP"
+            android:id="@+id/titleText"
+            android:textColor="#ffffff"
+            android:layout_above="@+id/copyrightText"
+            android:layout_centerHorizontal="true"
+            android:textSize="35dp"
+            android:textAlignment="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.28"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="© Harish Bhagat 2016"
+            android:id="@+id/copyrightText"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:paddingBottom="10dp"
+            android:textColor="#ffffff"
+            android:textAlignment="center"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.02"/>
+
+    </LinearLayout>
+
+</RelativeLayout>
