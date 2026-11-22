@@ -23,6 +23,7 @@ import harishbhagat.shapeship.activities.MenuActivity;
 import harishbhagat.shapeship.activities.PauseActivity;
 import harishbhagat.shapeship.audio.Audio;
 import harishbhagat.shapeship.audio.Sound;
+import harishbhagat.shapeship.graphics.Fonts;
 import harishbhagat.shapeship.graphics.Sprite;
 import harishbhagat.shapeship.graphics.Textures;
 import harishbhagat.shapeship.maths.RectangleArea;
@@ -92,7 +93,7 @@ public class GameSurfaceView extends SurfaceView implements Runnable, SurfaceHol
         holder = getHolder();
         holder.addCallback(this);
         preferences = context.getSharedPreferences("shapeship_preferences", Context.MODE_PRIVATE);
-        boldTypeface = Typeface.createFromAsset(context.getAssets(), "fonts/seguibl.ttf");
+        boldTypeface = Fonts.black(context);
 
         audio = Audio.get(context);
         audio.loadVolumes(preferences);

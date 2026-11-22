@@ -1,13 +1,12 @@
 package harishbhagat.shapeship.activities;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import androidx.activity.ComponentActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import harishbhagat.shapeship.R;
+import harishbhagat.shapeship.graphics.Fonts;
 
 public class PauseActivity extends ComponentActivity
 {
@@ -19,16 +18,8 @@ public class PauseActivity extends ComponentActivity
         SystemBars.keepContentClear(this);
 
         // Set the fonts
-        Typeface boldTypeface = Typeface.createFromAsset(getAssets(), "fonts/seguibl.ttf");
-        Typeface regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/segoeui.ttf");
-
-        TextView titleText = (TextView) findViewById(R.id.titleText);
-        TextView playText = (TextView) findViewById(R.id.playText);
-        TextView returnText = (TextView) findViewById(R.id.returnText);
-
-        titleText.setTypeface(boldTypeface);
-        playText.setTypeface(regularTypeface);
-        returnText.setTypeface(regularTypeface);
+        Fonts.apply(Fonts.black(this), findViewById(R.id.titleText));
+        Fonts.apply(Fonts.regular(this), findViewById(R.id.playText), findViewById(R.id.returnText));
     }
 
     /** Returns the user to the game */

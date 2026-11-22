@@ -1,13 +1,12 @@
 package harishbhagat.shapeship.activities;
 
 import android.content.Intent;
-import android.graphics.Typeface;
 import androidx.activity.ComponentActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import harishbhagat.shapeship.R;
+import harishbhagat.shapeship.graphics.Fonts;
 
 public class HelpActivity extends ComponentActivity
 {
@@ -20,16 +19,8 @@ public class HelpActivity extends ComponentActivity
         SystemBars.keepContentClear(this);
 
         // Set the fonts
-        Typeface boldTypeface = Typeface.createFromAsset(getAssets(), "fonts/seguibl.ttf");
-        Typeface regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/segoeui.ttf");
-
-        TextView titleText = (TextView) findViewById(R.id.titleText);
-        TextView para1 = (TextView) findViewById(R.id.helpTextPara1);
-        TextView para2 = (TextView) findViewById(R.id.helpTextPara2);
-
-        titleText.setTypeface(boldTypeface);
-        para1.setTypeface(regularTypeface);
-        para2.setTypeface(regularTypeface);
+        Fonts.apply(Fonts.black(this), findViewById(R.id.titleText));
+        Fonts.apply(Fonts.regular(this), findViewById(R.id.helpTextPara1), findViewById(R.id.helpTextPara2));
     }
 
     /** Returns the user to the main menu. */

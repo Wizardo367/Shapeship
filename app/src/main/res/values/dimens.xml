@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The menu, measured from design/menu_screen.jpg on a 360 dp wide phone.
+         values-sw600dp scales these up for tablets. -->
+    <dimen name="menu_title_size">40sp</dimen>
+    <dimen name="menu_title_margin_top">40dp</dimen>
+    <dimen name="menu_label_size">14sp</dimen>
+    <dimen name="menu_label_margin_top">24dp</dimen>
+    <dimen name="menu_score_size">20sp</dimen>
+    <dimen name="menu_ship_width">170dp</dimen>
+    <dimen name="menu_button_size">64dp</dimen>
+    <dimen name="menu_play_button_size">88dp</dimen>
+    <dimen name="menu_buttons_margin_bottom">40dp</dimen>
+
+    <!-- The rocks are partly off screen: negative margins push them past the edges. -->
+    <dimen name="menu_rock_size">140dp</dimen>
+    <dimen name="menu_rock_top_start_x">-61dp</dimen>
+    <dimen name="menu_rock_top_start_y">-47dp</dimen>
+    <dimen name="menu_rock_end_x">-96dp</dimen>
+    <dimen name="menu_rock_end_y">131dp</dimen>
+    <dimen name="menu_rock_bottom_start_x">-55dp</dimen>
+    <dimen name="menu_rock_bottom_start_y">-72dp</dimen>
+</resources>

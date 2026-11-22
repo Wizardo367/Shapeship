@@ -2,4 +2,35 @@
     <string name="app_name">Shapeship</string>
     <string name="musicVolumeID">musicVolume</string>
     <string name="sfxVolumeID">sfxVolume</string>
+
+    <!-- Titles. The game's name is shown in capitals, unlike the launcher label. -->
+    <string name="title_game">SHAPESHIP</string>
+    <string name="title_paused">PAUSED</string>
+    <string name="title_settings">SETTINGS</string>
+    <string name="title_help">HELP</string>
+
+    <string name="action_continue">Continue to the menu</string>
+    <string name="copyright">© Harish Bhagat 2016</string>
+
+    <!-- Menu -->
+    <string name="high_score">HIGH SCORE</string>
+    <string name="action_play">Play</string>
+    <string name="action_help">Help</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- Pause -->
+    <string name="pause_play">PLAY</string>
+    <string name="pause_menu">MENU</string>
+    <string name="action_resume">Resume the game</string>
+    <string name="action_return_to_menu">Return to the menu</string>
+
+    <!-- Settings -->
+    <string name="settings_music">Music</string>
+    <string name="settings_sound_effects">Sound Effects</string>
+    <string name="settings_instructions">Use the options above to adjust the game’s settings to your liking. Once you have done so press the button below to return to the main menu.</string>
+
+    <!-- Help -->
+    <string name="help_aim">The aim of the game is to destroy as many asteroids as possible without being hit.</string>
+    <string name="help_controls">To destroy objects you must fire at them, a single-tap on the screen will fire a laser beam.</string>
+    <string name="help_tap_image">A finger tapping the screen</string>
 </resources>

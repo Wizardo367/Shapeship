@@ -4,15 +4,14 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import androidx.activity.ComponentActivity;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.TextView;
 
 import harishbhagat.shapeship.R;
+import harishbhagat.shapeship.graphics.Fonts;
 
 public class SplashActivity extends ComponentActivity
 {
@@ -24,13 +23,8 @@ public class SplashActivity extends ComponentActivity
         SystemBars.keepContentClear(this);
 
         // Set the fonts
-        Typeface boldTypeface = Typeface.createFromAsset(getAssets(), "fonts/seguibl.ttf");
-        Typeface regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/segoeui.ttf");
-
-        TextView titleText = (TextView) findViewById(R.id.titleText);
-        TextView copyrightText = (TextView) findViewById(R.id.copyrightText);
-        titleText.setTypeface(boldTypeface);
-        copyrightText.setTypeface(regularTypeface);
+        Fonts.apply(Fonts.black(this), findViewById(R.id.titleText));
+        Fonts.apply(Fonts.regular(this), findViewById(R.id.copyrightText));
     }
 
     /** Show the menu when the button is clicked. */

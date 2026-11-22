@@ -1,67 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<!-- The activity's content view is already a full-screen FrameLayout, so these views go straight into it -->
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     tools:context=".activities.SplashActivity">
 
+    <!-- Tapping anywhere goes to the menu -->
     <ImageView
-        android:onClick="showMenu"
+        android:id="@+id/splashScreenView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/splashScreenView"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/background_0"
-        android:scaleType="fitXY"
-        />
+        android:contentDescription="@string/action_continue"
+        android:onClick="showMenu"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background_0" />
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:orientation="vertical"
         android:weightSum="1">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/shapeshipImage"
-            android:src="@drawable/shapeship"
-            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
             android:layout_weight="0.7"
-            android:layout_gravity="center_horizontal"
+            android:importantForAccessibility="no"
+            android:paddingBottom="75dp"
             android:scaleType="fitEnd"
-            android:paddingBottom="75dp"/>
+            android:src="@drawable/shapeship" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="SHAPESHIP"
             android:id="@+id/titleText"
-            android:textColor="#ffffff"
-            android:layout_above="@+id/copyrightText"
-            android:layout_centerHorizontal="true"
-            android:textSize="35dp"
-            android:textAlignment="center"
-            android:layout_gravity="center_horizontal"
-            android:layout_weight="0.28"/>
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceSmall"
-            android:text="© Harish Bhagat 2016"
-            android:id="@+id/copyrightText"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:paddingBottom="10dp"
-            android:textColor="#ffffff"
-            android:textAlignment="center"
             android:layout_gravity="center_horizontal"
-            android:layout_weight="0.02"/>
+            android:layout_weight="0.28"
+            android:text="@string/title_game"
+            android:textColor="@color/text_light"
+            android:textSize="35sp"
+            tools:fontFamily="@font/noto_sans_black" />
+
+        <TextView
+            android:id="@+id/copyrightText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_weight="0.02"
+            android:paddingBottom="10dp"
+            android:text="@string/copyright"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:textColor="@color/text_light"
+            tools:fontFamily="@font/noto_sans_regular" />
 
     </LinearLayout>
 
-</RelativeLayout>
+</merge>

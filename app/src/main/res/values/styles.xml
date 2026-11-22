@@ -4,6 +4,8 @@
     <style name="AppTheme" parent="android:Theme.Material.NoActionBar">
         <!-- Shows behind the transparent system bars. -->
         <item name="android:windowBackground">@android:color/black</item>
+        <!-- The sliders' colour, as in the 2016 theme -->
+        <item name="android:colorAccent">@color/accent</item>
     </style>
 
 </resources>

@@ -47,6 +47,9 @@ dependencies {
     // and later. The activities don't need AppCompat: the app has no action bar or support widgets.
     // 1.12 needs minSdk 23.
     implementation 'androidx.activity:activity:1.11.0'
+    // ResourcesCompat.getFont, which loads the fonts in res/font on Android 5 to 7.
+    // The same version the activity library already brings in.
+    implementation 'androidx.core:core:1.13.0'
     // The activity library pulls in two Kotlin standard library versions; the BOM aligns them.
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.22')
 

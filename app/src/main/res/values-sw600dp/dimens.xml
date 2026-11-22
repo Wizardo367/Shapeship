@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The phone sizes scaled by 600 / 360, so that the menu keeps its proportions. -->
+    <dimen name="menu_title_size">67sp</dimen>
+    <dimen name="menu_title_margin_top">67dp</dimen>
+    <dimen name="menu_label_size">22sp</dimen>
+    <dimen name="menu_label_margin_top">40dp</dimen>
+    <dimen name="menu_score_size">32sp</dimen>
+    <dimen name="menu_ship_width">283dp</dimen>
+    <dimen name="menu_button_size">107dp</dimen>
+    <dimen name="menu_play_button_size">147dp</dimen>
+    <dimen name="menu_buttons_margin_bottom">67dp</dimen>
+
+    <dimen name="menu_rock_size">233dp</dimen>
+    <dimen name="menu_rock_top_start_x">-102dp</dimen>
+    <dimen name="menu_rock_top_start_y">-78dp</dimen>
+    <dimen name="menu_rock_end_x">-160dp</dimen>
+    <dimen name="menu_rock_end_y">218dp</dimen>
+    <dimen name="menu_rock_bottom_start_x">-92dp</dimen>
+    <dimen name="menu_rock_bottom_start_y">-120dp</dimen>
+</resources>

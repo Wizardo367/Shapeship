@@ -1,120 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<!-- The main menu, built to match design/menu_screen.jpg: rocks reaching in from the edges,
+     the title and high score at the top, the ship in the middle and the buttons below it.
+     Sizes are in res/values/dimens.xml, with larger ones for tablets in values-sw600dp.
+     The activity's content view is already a full-screen FrameLayout, so these views go straight into it. -->
+<merge
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
     tools:context=".activities.MenuActivity">
 
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/menuScreenView"
-        android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true"
-        android:src="@drawable/background_0"
-        android:scaleType="fitXY"/>
+        android:importantForAccessibility="no"
+        android:scaleType="centerCrop"
+        android:src="@drawable/background_0" />
+
+    <!-- The rocks are decoration. Negative margins push them partly off screen. -->
+    <ImageView
+        android:layout_width="@dimen/menu_rock_size"
+        android:layout_height="@dimen/menu_rock_size"
+        android:layout_gravity="top|start"
+        android:layout_marginStart="@dimen/menu_rock_top_start_x"
+        android:layout_marginTop="@dimen/menu_rock_top_start_y"
+        android:importantForAccessibility="no"
+        android:rotation="20"
+        android:src="@drawable/asteroid" />
+
+    <ImageView
+        android:layout_width="@dimen/menu_rock_size"
+        android:layout_height="@dimen/menu_rock_size"
+        android:layout_gravity="top|end"
+        android:layout_marginTop="@dimen/menu_rock_end_y"
+        android:layout_marginEnd="@dimen/menu_rock_end_x"
+        android:importantForAccessibility="no"
+        android:rotation="110"
+        android:src="@drawable/asteroid" />
+
+    <ImageView
+        android:layout_width="@dimen/menu_rock_size"
+        android:layout_height="@dimen/menu_rock_size"
+        android:layout_gravity="bottom|start"
+        android:layout_marginStart="@dimen/menu_rock_bottom_start_x"
+        android:layout_marginBottom="@dimen/menu_rock_bottom_start_y"
+        android:importantForAccessibility="no"
+        android:rotation="230"
+        android:src="@drawable/asteroid" />
 
     <LinearLayout
-        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:weightSum="1">
+        android:gravity="center_horizontal"
+        android:orientation="vertical">
 
         <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="SHAPESHIP"
             android:id="@+id/titleText"
-            android:layout_centerHorizontal="true"
-            android:textColor="#ffffff"
-            android:textSize="35dp"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:layout_weight="0.2"
-            android:layout_marginTop="50dp"/>
-
-        <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="HIGH SCORE"
-            android:textColor="#bc0202"
-            android:id="@+id/highScoreTitle"
-            android:layout_gravity="center"
-            android:gravity="center"
-            android:layout_weight="0.05"/>
+            android:layout_marginTop="@dimen/menu_title_margin_top"
+            android:text="@string/title_game"
+            android:textColor="@color/text_light"
+            android:textSize="@dimen/menu_title_size"
+            tools:fontFamily="@font/noto_sans_black" />
 
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="000000"
-            android:id="@+id/scoreText"
-            android:layout_alignBottom="@+id/imageView"
-            android:layout_centerHorizontal="true"
-            android:textColor="#ffffff"
-            android:layout_gravity="center_horizontal"
-            android:gravity="center"
-            android:layout_weight="0.05"/>
-
-        <ImageView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/imageView2"
-            android:layout_weight="0.4"
-            android:src="@drawable/shapeship"
-            android:layout_marginTop="35dp"/>
-
+        <!-- The label and the score are read together by screen readers -->
         <LinearLayout
-            android:orientation="horizontal"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:focusable="true"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/highScoreTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/menu_label_margin_top"
+                android:background="@color/shapeship_red"
+                android:paddingStart="6dp"
+                android:paddingEnd="6dp"
+                android:text="@string/high_score"
+                android:textColor="@color/text_dark"
+                android:textSize="@dimen/menu_label_size"
+                tools:fontFamily="@font/noto_sans_black" />
+
+            <TextView
+                android:id="@+id/scoreText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:textColor="@color/text_light"
+                android:textSize="@dimen/menu_score_size"
+                tools:fontFamily="@font/noto_sans_black"
+                tools:text="000000" />
+        </LinearLayout>
+
+        <!-- The ship takes the space left between the score and the buttons, centred in it -->
+        <ImageView
+            android:layout_width="@dimen/menu_ship_width"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:importantForAccessibility="no"
+            android:scaleType="fitCenter"
+            android:src="@drawable/shapeship" />
+
+        <!-- Three equal columns, so the buttons sit at a sixth, a half and five sixths of the width -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:weightSum="1"
-            android:layout_weight="0.3"
-            android:gravity="bottom">
+            android:layout_marginBottom="@dimen/menu_buttons_margin_bottom"
+            android:baselineAligned="false"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-            <ImageView
-                android:onClick="showHelp"
-                android:layout_width="60dp"
-                android:layout_height="80dp"
+            <ImageButton
                 android:id="@+id/helpButton"
-                android:src="@drawable/help_button"
-                android:layout_alignTop="@+id/playButton"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginLeft="50dp"
-                android:layout_weight="0.2"
-                android:layout_marginBottom="40dp"/>
+                android:layout_width="0dp"
+                android:layout_height="@dimen/menu_button_size"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/action_help"
+                android:onClick="showHelp"
+                android:scaleType="fitCenter"
+                android:src="@drawable/help_button" />
 
-            <ImageView
-                android:onClick="startGame"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
+            <ImageButton
                 android:id="@+id/playButton"
-                android:layout_marginBottom="40dp"
-                android:src="@drawable/play_button"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:layout_weight="0.6"
-                />
+                android:layout_width="0dp"
+                android:layout_height="@dimen/menu_play_button_size"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/action_play"
+                android:onClick="startGame"
+                android:scaleType="fitCenter"
+                android:src="@drawable/play_button" />
 
-            <ImageView
-                android:onClick="showSettings"
-                android:layout_width="60dp"
-                android:layout_height="80dp"
+            <ImageButton
                 android:id="@+id/settingsButton"
-                android:src="@drawable/settings_button"
-                android:layout_alignTop="@+id/playButton"
-                android:layout_alignParentRight="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginRight="50dp"
-                android:layout_weight="0.2"
-                android:layout_marginBottom="40dp"/>
+                android:layout_width="0dp"
+                android:layout_height="@dimen/menu_button_size"
+                android:layout_weight="1"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:contentDescription="@string/action_settings"
+                android:onClick="showSettings"
+                android:scaleType="fitCenter"
+                android:src="@drawable/settings_button" />
         </LinearLayout>
 
     </LinearLayout>
 
-</RelativeLayout>
+</merge>

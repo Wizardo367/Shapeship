@@ -3,7 +3,6 @@ package harishbhagat.shapeship.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import androidx.activity.ComponentActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -11,6 +10,7 @@ import android.view.View;
 import android.widget.TextView;
 
 import harishbhagat.shapeship.R;
+import harishbhagat.shapeship.graphics.Fonts;
 import harishbhagat.shapeship.game.HighScore;
 import harishbhagat.shapeship.game.ScoreFormat;
 
@@ -25,14 +25,8 @@ public class MenuActivity extends ComponentActivity
         SystemBars.keepContentClear(this);
 
         // Set the fonts
-        Typeface boldTypeface = Typeface.createFromAsset(getAssets(), "fonts/seguibl.ttf");
-
-        TextView titleText = (TextView) findViewById(R.id.titleText);
-        TextView highScoreTitleText = (TextView) findViewById(R.id.highScoreTitle);
-        TextView scoreText = (TextView) findViewById(R.id.scoreText);
-        titleText.setTypeface(boldTypeface);
-        highScoreTitleText.setTypeface(boldTypeface);
-        scoreText.setTypeface(boldTypeface);
+        final TextView scoreText = findViewById(R.id.scoreText);
+        Fonts.apply(Fonts.black(this), findViewById(R.id.titleText), findViewById(R.id.highScoreTitle), scoreText);
 
         // Get high-score
         SharedPreferences preferences = this.getSharedPreferences("shapeship_preferences", Context.MODE_PRIVATE);

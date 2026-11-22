@@ -3,15 +3,14 @@ package harishbhagat.shapeship.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.graphics.Typeface;
 import androidx.activity.ComponentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
 import harishbhagat.shapeship.R;
+import harishbhagat.shapeship.graphics.Fonts;
 
 public class SettingsActivity extends ComponentActivity implements SeekBar.OnSeekBarChangeListener
 {
@@ -38,18 +37,9 @@ public class SettingsActivity extends ComponentActivity implements SeekBar.OnSee
         preferences = this.getSharedPreferences("shapeship_preferences", Context.MODE_PRIVATE);
 
         // Set the fonts
-        Typeface boldTypeface = Typeface.createFromAsset(getAssets(), "fonts/seguibl.ttf");
-        Typeface regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/segoeui.ttf");
-
-        TextView titleText = (TextView) findViewById(R.id.titleText);
-        TextView musicText = (TextView) findViewById(R.id.musicText);
-        TextView sfxText = (TextView) findViewById(R.id.sfxText);
-        TextView helpText = (TextView) findViewById(R.id.helpText);
-
-        titleText.setTypeface(boldTypeface);
-        musicText.setTypeface(regularTypeface);
-        sfxText.setTypeface(regularTypeface);
-        helpText.setTypeface(regularTypeface);
+        Fonts.apply(Fonts.black(this), findViewById(R.id.titleText));
+        Fonts.apply(Fonts.regular(this),
+                findViewById(R.id.musicText), findViewById(R.id.sfxText), findViewById(R.id.helpText));
 
         // Get music and sfx seekbars
         musicSeekBar = (SeekBar) findViewById(R.id.musicVolume);

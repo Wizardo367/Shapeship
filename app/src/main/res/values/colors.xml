@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- The ship's red, also used behind the high score label. -->
+    <color name="shapeship_red">#BC0202</color>
+    <color name="text_light">#FFFFFF</color>
+    <color name="text_dark">#000000</color>
+    <!-- The settings sliders, kept from the 2016 theme -->
+    <color name="accent">#FF4081</color>
+</resources>
