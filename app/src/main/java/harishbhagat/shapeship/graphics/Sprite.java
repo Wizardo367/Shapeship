@@ -58,11 +58,18 @@ public class Sprite extends Collidable implements Cloneable
 
     // --- Function(s)
 
-    /** Returns a copy of the object */
+    /** Returns a copy of the object. The copy shares the texture but none of the mutable state. */
     @Override
     public Object clone() throws CloneNotSupportedException
     {
-        return (Sprite)super.clone();
+        final Sprite copy = (Sprite) super.clone();
+        copy.acceleration = new Vector2(acceleration);
+        copy.matrix = new Matrix(matrix);
+        copy.position = new Vector2(position);
+        copy.scale = new Vector2(scale);
+        copy.velocity = new Vector2(velocity);
+        if (boundingBoxSize != null) copy.boundingBoxSize = new Vector2(boundingBoxSize);
+        return copy;
     }
 
     /** Returns the sprite's current acceleration. */
@@ -161,11 +168,10 @@ public class Sprite extends Collidable implements Cloneable
     {
         // Scale the texture
         matrix.postScale(scalar.x, scalar.y);
-        scale.x += (scalar.x > 1) ? scalar.x : -scalar.x;
-        scale.y += (scalar.y > 1) ? scalar.y : -scalar.y;
+        scale.x *= scalar.x;
+        scale.y *= scalar.y;
         texture = Bitmap.createBitmap(texture, 0, 0, texture.getWidth(), texture.getHeight(), matrix, true);
-        // Scale the bounding box
-        boundingBoxSize.scale((scalar.x > scalar.y) ? scalar.x : scalar.y);
+        // Match the bounding box to the scaled texture
         this.boundingBoxSize = new Vector2(texture.getWidth(), texture.getHeight());
     }
 

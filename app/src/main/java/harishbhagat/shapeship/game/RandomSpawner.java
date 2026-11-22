@@ -1,19 +1,15 @@
 package harishbhagat.shapeship.game;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.util.Log;
 
 import java.util.Random;
 
-import harishbhagat.shapeship.graphics.Axis2D;
-import harishbhagat.shapeship.graphics.DisplayUtilities;
 import harishbhagat.shapeship.graphics.Sprite;
 import harishbhagat.shapeship.maths.RectangleArea;
 import harishbhagat.shapeship.maths.Vector2;
 
 /**
- * Used to spawn sprites in random locations within a set area.
+ * Used to spawn sprites in random locations within a set area, out of sight of the player.
  *
  * Created by Harish Bhagat on 29/03/2016.
  */
@@ -21,81 +17,86 @@ public class RandomSpawner extends Spawner
 {
     // --- Member(s)
 
-    private DisplayUtilities displayUtilities;
+    /** How many random positions to try before giving up on a spawn, rather than looping forever. */
+    static final int MAX_ATTEMPTS = 50;
+
+    protected final RectangleArea screen; /** The visible area. Sprites spawn wholly outside it. */
+    protected final Random random; /** Source of the random positions. */
 
     // --- Constructor(s)
 
     /** Default constructor. */
-    public RandomSpawner(final Sprite entity, final int maxSpawn, final RectangleArea boundaries, Context context)
+    public RandomSpawner(final Sprite entity, final int maxSpawn, final RectangleArea boundaries, final RectangleArea screen, final Random random, Context context)
     {
         super(entity, maxSpawn, boundaries, context);
         // Set the variables
-        displayUtilities = new DisplayUtilities(context);
+        this.screen = screen;
+        this.random = random;
     }
 
     // --- Function(s)
 
-    /** Used to spawn a new sprite. */
+    /** Used to spawn a new sprite. Returns false if the spawner is full or no free position was found. */
     public boolean spawn() throws CloneNotSupportedException
     {
-        if (entities.size() < maxSpawn)
-        {
-            // Create a new entity
-            Sprite newEntity = (Sprite) this.entity.clone();
-            // Position the entity randomly
-            newEntity.setPosition(getRandomPosition());
-            // Add the entity
-            this.entities.addElement(newEntity);
-            return true;
-        }
-        return false;
+        if (entities.size() >= maxSpawn) return false;
+
+        final Vector2 position = getRandomPosition();
+        if (position == null) return false;
+
+        // Create a new entity
+        Sprite newEntity = (Sprite) this.entity.clone();
+        newEntity.setPosition(position);
+        // Add the entity
+        this.entities.addElement(newEntity);
+        return true;
     }
 
-    /** Used to generate a random position to which a sprite may be spawned. */
+    /** Used to define the area in which sprites may be spawned. */
+    protected RectangleArea getSpawnArea()
+    {
+        return boundaries;
+    }
+
+    /** Used to generate a random position to which a sprite may be spawned, or null if none was found. */
     protected Vector2 getRandomPosition()
     {
-        Random random = new Random();
-        Vector2 position;
+        final RectangleArea area = getSpawnArea();
 
-        while (true)
+        for (int attempt = 0; attempt < MAX_ATTEMPTS; ++attempt)
         {
             // Generate a random position
-            final int x = (int) (random.nextInt((int)(Math.abs(boundaries.minX) + boundaries.maxX)) + boundaries.minX);
-            final int y = (int) (random.nextInt((int)(Math.abs(boundaries.minY) + boundaries.maxY)) + boundaries.minY);
-            position = new Vector2(x, y);
+            final Vector2 position = new Vector2(randomBetween(area.minX, area.maxX), randomBetween(area.minY, area.maxY));
             // Validate the position
-            if (validatePosition(position)) break;
+            if (validatePosition(position)) return position;
         }
 
-        return position;
+        return null;
     }
 
-    /** Used to validate the random position generated. */
+    /** Returns a random value from min (inclusive) to max (exclusive). */
+    private float randomBetween(final float min, final float max)
+    {
+        return min + random.nextFloat() * (max - min);
+    }
+
+    /** Used to validate the random position generated. Positions are sprite centres. */
     private boolean validatePosition(final Vector2 position)
     {
-        // Check that the new object won't intersect others when spawned
+        final Vector2 entitySize = this.entity.boundingBoxSize;
 
-        // Get the size of the entity's bitmap
-        Bitmap entityBitmap = this.entity.getBitmap();
-        Vector2 entitySize = new Vector2(entityBitmap.getWidth(), entityBitmap.getHeight());
-
-        // Check that the object has spawned outside of the viewing area
-        final RectangleArea screenSize = displayUtilities.getScreenSize();
-        if ((position.x >= screenSize.minX && position.x <= screenSize.maxX) || (position.y >= screenSize.minY && position.y <= screenSize.maxY))
+        // Check that no part of the new sprite would be on screen
+        final Vector2 halfSize = entitySize.divide(2);
+        final RectangleArea visibleCentres = new RectangleArea(screen.minX - halfSize.x, screen.maxX + halfSize.x, screen.minY - halfSize.y, screen.maxY + halfSize.y);
+        if (visibleCentres.contains(position))
             return false;
 
-        // Check every existing entity
+        // Check that the new sprite won't overlap an existing one
         for (Sprite entity : this.entities)
         {
-            Vector2 entityPosition = entity.getPosition();
-            if (position.x < entityPosition.x + entitySize.x &&
-                    position.x + entitySize.x > entityPosition.x &&
-                    position.y < entityPosition.y + entitySize.y &&
-                    entitySize.y + position.y > entityPosition.y)
-            {
-                // Collision
+            final Vector2 entityPosition = entity.getPosition();
+            if (Math.abs(position.x - entityPosition.x) < entitySize.x && Math.abs(position.y - entityPosition.y) < entitySize.y)
                 return false;
-            }
         }
 
         // No collisions

@@ -16,9 +16,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 
 import java.text.DecimalFormat;
+import java.util.concurrent.atomic.AtomicReference;
 
 import harishbhagat.shapeship.R;
 import harishbhagat.shapeship.activities.MenuActivity;
@@ -44,7 +44,8 @@ public class GameSurfaceView extends SurfaceView implements Runnable
 {
     // --- Member(s)
 
-    private boolean running = false;
+    // Written by the UI thread in pause() and read by the game thread every frame, so volatile
+    private volatile boolean running = false;
     private Bitmap backgroundImage;
     private Context context;
     private DisplayUtilities displayUtilities;
@@ -61,11 +62,11 @@ public class GameSurfaceView extends SurfaceView implements Runnable
 
     // Game elements
     private Audio audio;
-    private boolean newTap;
-    private Integer score;
+    private int score;
     private Player player;
     private AsteroidSpawner asteroidSpawner;
-    private Vector2 tapLocation;
+    // The latest tap not yet handled, handed from the UI thread to the game thread
+    private final AtomicReference<Vector2> pendingTap = new AtomicReference<>();
 
     // UI elements
     private Sprite pauseButton;
@@ -88,9 +89,6 @@ public class GameSurfaceView extends SurfaceView implements Runnable
         holder = getHolder(); // Used for the ScreenView
         this.screenDimensions = displayUtilities.getScreenSize();
         this.boundaries = screenDimensions.scale(1.2f); // Padding allows for elements to spawn off-screen without being deleted
-        this.screenDimensions = displayUtilities.getScreenSize(); // Redo because of way Java handles references
-        tapLocation = new Vector2();
-        newTap = false;
         preferences = context.getSharedPreferences("shapeship_preferences", Context.MODE_PRIVATE);
 
         // Load and scale the background
@@ -120,10 +118,11 @@ public class GameSurfaceView extends SurfaceView implements Runnable
         score = 0;
         Bitmap playerBitmap = player.getBitmap();
         Vector2 playerSize = new Vector2(playerBitmap.getWidth(), playerBitmap.getHeight());
-        player.setPosition(new Vector2((screenDimensions.maxX - playerSize.x) / 2, (screenDimensions.maxY - playerSize.y) - displayUtilities.percentToPixels(5, Axis2D.Y)));
+        // Positions are centres: centre the player horizontally, 5% of the screen height above the bottom
+        player.setPosition(new Vector2(screenDimensions.maxX / 2, screenDimensions.maxY - (playerSize.y / 2) - displayUtilities.percentToPixels(5, Axis2D.Y)));
 
         // Initialise the asteroid spawner
-        asteroidSpawner = new AsteroidSpawner(context, 7, boundaries);
+        asteroidSpawner = new AsteroidSpawner(context, 7, boundaries, screenDimensions);
 
         // UI elements
 
@@ -133,6 +132,14 @@ public class GameSurfaceView extends SurfaceView implements Runnable
         final Bitmap pauseButtonBitmap = pauseButton.getBitmap();
         final Vector2 pauseButtonSize = new Vector2(pauseButtonBitmap.getWidth(), pauseButtonBitmap.getHeight());
         pauseButton.setPosition(new Vector2(screenDimensions.maxX - (pauseButtonSize.x / 2) - displayUtilities.percentToPixels(5, Axis2D.X), (pauseButtonSize.y / 2) + displayUtilities.percentToPixels(5, Axis2D.X)));
+
+        // Record taps for the game thread. The listener is set once, here on the UI thread.
+        setOnTouchListener((view, event) ->
+        {
+            if (event.getAction() != MotionEvent.ACTION_DOWN) return false;
+            pendingTap.set(new Vector2(event.getX(), event.getY()));
+            return true;
+        });
     }
 
     // --- Method(s)
@@ -180,26 +187,6 @@ public class GameSurfaceView extends SurfaceView implements Runnable
         pauseButton.draw(canvas, paint);
     }
 
-    /** Handles events required by the view. */
-    private void handleEvents()
-    {
-        // Update the position of the last touch
-        this.setOnTouchListener(new OnTouchListener()
-        {
-            @Override
-            public boolean onTouch(View v, MotionEvent event)
-            {
-                if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    tapLocation.x = event.getX();
-                    tapLocation.y = event.getY();
-                    newTap = true;
-                    return true;
-                }
-                return false;
-            }
-        });
-    }
-
     /** Used to pause the view. */
     public void pause()
     {
@@ -208,17 +195,18 @@ public class GameSurfaceView extends SurfaceView implements Runnable
 
         running = false;
 
-        while(true)
+        if (thread != null)
         {
             try
             {
                 thread.join();
             }
-            catch(InterruptedException e) { e.printStackTrace(); }
-            break;
+            catch (InterruptedException e)
+            {
+                Thread.currentThread().interrupt();
+            }
+            thread = null;
         }
-
-        thread = null;
         gameTimer.setThread(null);
     }
 
@@ -266,9 +254,9 @@ public class GameSurfaceView extends SurfaceView implements Runnable
             // Clear the canvas
             canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
             canvas.drawBitmap(backgroundImage, 0, 0, paint);
-            // Handle events
-            this.handleEvents();
-            if (newTap)
+            // Handle the latest tap, if there is one
+            final Vector2 tapLocation = pendingTap.getAndSet(null);
+            if (tapLocation != null)
             {
                 // Check if the pause button was tapped
                 if (Collision.PointAABBIntersectionTest(pauseButton, tapLocation))
@@ -282,18 +270,38 @@ public class GameSurfaceView extends SurfaceView implements Runnable
                     // Move the player
                     final Vector2 playerPosition = player.getPosition();
                     player.setPosition(new Vector2(tapLocation.x, playerPosition.y));
-                    // Fire a bullet
-                    player.fire();
-                    // Play shooting sound effect
-                    audio.playSound(Sound.SHOOT);
+                    // Fire a bullet, and play the shooting sound effect if one was fired
+                    if (player.fire())
+                        audio.playSound(Sound.SHOOT);
                 }
-                newTap = false;
             }
             // Update and draw the canvas
             this.updateCanvas(deltaTime);
             this.drawCanvas(canvas);
             holder.unlockCanvasAndPost(canvas);
         }
+    }
+
+    /** Ends the game: stops the loop after this frame, saves the score and returns to the menu. */
+    private void gameOver()
+    {
+        // Stop the loop, so that this runs only once
+        running = false;
+
+        // Play explosion sound effect
+        audio.playSound(Sound.EXPLOSION);
+
+        // Save the score if it's higher than the existing score
+        HighScore.saveIfHigher(preferences, score);
+
+        // Return to the main menu. Activities are started and finished on the UI thread.
+        post(() ->
+        {
+            final Activity activity = (Activity) context;
+            activity.startActivity(new Intent(context, MenuActivity.class));
+            // Free up memory
+            activity.finish();
+        });
     }
 
     /** Used to update the canvas */
@@ -309,60 +317,21 @@ public class GameSurfaceView extends SurfaceView implements Runnable
         // Player & Asteroid
         for (Sprite asteroid : asteroidSpawner.entities)
         {
-            CollisionInfo collisionInfo = Collision.HasCollidedWith(player, asteroid, deltaTime);
-            if (collisionInfo.collision)
+            if (Collision.HasCollidedWith(player, asteroid, deltaTime).collision)
             {
-                // Play explosion sound effect
-                audio.playSound(Sound.EXPLOSION);
-
-                // Game over
-
-                // Save the score if it's higher than the existing score
-                final String scoreKey = context.getString(R.string.high_score);
-                Integer existingScore = preferences.getInt(scoreKey, 0);
-
-                SharedPreferences.Editor editor = preferences.edit();
-
-                if (score >= existingScore)
-                {
-                    editor.putInt(scoreKey, score);
-                    editor.commit();
-                }
-
-                // Return to the main menu
-
-                // Free up memory
-                ((Activity)context).finish();
-                Intent intent = new Intent(context, MenuActivity.class);
-                // Show the activity
-                context.startActivity(intent);
+                gameOver();
+                return;
             }
         }
 
         // Bullet & Asteroid
-        for (int x = 0; x < player.bulletSpawner.entities.size(); ++x)
+        final int hits = BulletHits.removeHits(player.bulletSpawner.entities, asteroidSpawner.entities, deltaTime);
+        if (hits > 0)
         {
-            boolean destroyBullet = false;
-
-            for (int y = 0; y < asteroidSpawner.entities.size(); ++y)
-            {
-                Sprite bullet = player.bulletSpawner.entities.elementAt(x);
-                Sprite asteroid = asteroidSpawner.entities.elementAt(y);
-                CollisionInfo collisionInfo = Collision.HasCollidedWith(bullet, asteroid, deltaTime);
-                if (collisionInfo.collision)
-                {
-                    // Play explosion sound effect
-                    audio.playSound(Sound.EXPLOSION);
-                    // Destroy asteroid
-                    destroyBullet = true;
-                    asteroidSpawner.entities.remove(y);
-                    // Add score
-                    score += 10;
-                }
-                if (destroyBullet) break;
-            }
-            // Destroy bullet
-            if (destroyBullet) player.bulletSpawner.entities.remove(x);
+            // Play explosion sound effect
+            audio.playSound(Sound.EXPLOSION);
+            // Add score
+            score += 10 * hits;
         }
 
         // Asteroid & Asteroid

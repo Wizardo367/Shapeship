@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Log;
 
+import java.util.Iterator;
 import java.util.Vector;
 
 import harishbhagat.shapeship.graphics.Sprite;
@@ -57,20 +58,22 @@ public abstract class Spawner
         this.maxSpawn = maxSpawn;
     }
 
-    /** Used to update each entity. */
+    /** Used to update each entity, removing any that have left the boundaries. */
     public void update(final float deltaTime)
     {
-        // Check if each entity is within the boundaries
-        for (int i = 0; i < entities.size(); ++i)
+        // Removing through the iterator keeps the loop from skipping the entity after a removed one
+        final Iterator<Sprite> iterator = entities.iterator();
+        while (iterator.hasNext())
         {
-            Vector2 entityPosition = entities.elementAt(i).getPosition();
+            final Sprite entity = iterator.next();
+            final Vector2 entityPosition = entity.getPosition();
 
             if (entityPosition.x >= boundaries.minX && entityPosition.x < boundaries.maxX && entityPosition.y >= boundaries.minY && entityPosition.y < boundaries.maxY)
                 // Update the entity
-                entities.elementAt(i).update(deltaTime);
+                entity.update(deltaTime);
             else
                 // The entity is out of bounds and needs to be deleted
-                entities.remove(i);
+                iterator.remove();
         }
     }
 }

@@ -1,7 +1,5 @@
 package harishbhagat.shapeship.physics;
 
-import android.graphics.Bitmap;
-
 import harishbhagat.shapeship.maths.RectangleArea;
 import harishbhagat.shapeship.maths.Vector2;
 import harishbhagat.shapeship.graphics.Sprite;
@@ -20,72 +18,91 @@ public class Collision
 
     // --- Function(s)
 
-    /** Performs an AABB collision test between two sprites.  */
-    private static CollisionInfo AABBCollisionTest(Sprite sprite, Sprite otherSprite, final float deltaTime)
+    /**
+     * Performs an AABB collision test between two sprites.
+     * A sprite's position is its centre, as in Sprite.draw.
+     * The normal points from sprite to otherSprite, along the axis with the smaller overlap.
+     */
+    private static CollisionInfo AABBCollisionTest(Sprite sprite, Sprite otherSprite)
     {
-        // get the positions of the sprites
-        Vector2 spritePosition = sprite.getPosition();
-        Vector2 otherSpritePosition = otherSprite.getPosition();
+        final Vector2 difference = otherSprite.getPosition().subtract(sprite.getPosition());
+        final float overlapX = (sprite.boundingBoxSize.x + otherSprite.boundingBoxSize.x) / 2 - Math.abs(difference.x);
+        final float overlapY = (sprite.boundingBoxSize.y + otherSprite.boundingBoxSize.y) / 2 - Math.abs(difference.y);
 
-        if (spritePosition.x < otherSpritePosition.x + otherSprite.boundingBoxSize.x &&
-                spritePosition.x + sprite.boundingBoxSize.x > otherSpritePosition.x &&
-                spritePosition.y < otherSpritePosition.y + otherSprite.boundingBoxSize.y &&
-                sprite.boundingBoxSize.y + spritePosition.y > otherSpritePosition.y)
-        {
-            // Collision
-
-            // Get the collision normal
-            Vector2 collisionNormal = sprite.getVelocity().add(otherSprite.getVelocity()).multiply(deltaTime);
-
-            return new CollisionInfo(true, collisionNormal.magnitude(), collisionNormal);
-        }
-        else
-            // No Collision
+        // Boxes that only touch don't collide
+        if (overlapX <= 0 || overlapY <= 0)
             return new CollisionInfo();
+
+        if (overlapX < overlapY)
+            return new CollisionInfo(true, overlapX, new Vector2(Sign(difference.x), 0));
+        return new CollisionInfo(true, overlapY, new Vector2(0, Sign(difference.y)));
     }
 
-    /** Performs an AABB-circle collision test between two sprites.  */
-    private static CollisionInfo AABBCircleCollisionTest(Sprite sprite, Sprite otherSprite, final float deltaTime)
+    /**
+     * Performs an AABB-circle collision test between two sprites.
+     * The normal points from sprite to otherSprite.
+     */
+    private static CollisionInfo AABBCircleCollisionTest(Sprite sprite, Sprite otherSprite)
     {
         // Check the colliders of both sprites
-        Sprite rect = (sprite.getColliderShape() == ColliderShape.RECTANGLE) ? sprite : otherSprite;
-        Sprite circle = (rect == sprite) ? otherSprite : sprite;
+        final Sprite rect = (sprite.getColliderShape() == ColliderShape.RECTANGLE) ? sprite : otherSprite;
+        final Sprite circle = (rect == sprite) ? otherSprite : sprite;
 
         // Circle centre minus rectangle centre
-        Vector2 difference = circle.getPosition().subtract(rect.getPosition());
+        final Vector2 difference = circle.getPosition().subtract(rect.getPosition());
 
         // Get the extents of rect
-        Vector2 extents = rect.boundingBoxSize.divide(2);
+        final Vector2 extents = rect.boundingBoxSize.divide(2);
 
-        // Clamp diff to rect extents
-        Vector2 clamp = new Vector2();
-        clamp.x = (difference.x >= 0) ? Math.min(difference.x, extents.x) : Math.max(difference.x, -extents.x);
-        clamp.y = (difference.y >= 0) ? Math.min(difference.y, extents.y) : Math.max(difference.y, -extents.y);
+        // The point of the rectangle closest to the circle's centre, relative to the rectangle's centre
+        final Vector2 closest = new Vector2(Clamp(difference.x, extents.x), Clamp(difference.y, extents.y));
 
-        // Calculate the distance
-        Vector2 dist = difference.subtract(clamp);
-        float distance = dist.magnitude() - Radius(circle);
+        // Compare the distance from that point to the circle's centre with the radius
+        final Vector2 offset = difference.subtract(closest);
+        final float distance = offset.magnitude();
+        final float radius = Radius(circle);
 
-        // Check for a collision
-        if (distance < 0)
-            // Collision
-            return new CollisionInfo(true, distance, clamp.normalise());
+        if (distance >= radius)
+            // No Collision
+            return new CollisionInfo();
 
-        // No Collision
-        return new CollisionInfo();
+        // Find the normal from the rectangle towards the circle
+        Vector2 normal;
+        float penetration;
+        if (distance > 0)
+        {
+            normal = offset.divide(distance);
+            penetration = radius - distance;
+        }
+        else
+        {
+            // The circle's centre is inside the rectangle, so push it out through the nearest side
+            final float gapX = extents.x - Math.abs(difference.x);
+            final float gapY = extents.y - Math.abs(difference.y);
+            normal = (gapX < gapY) ? new Vector2(Sign(difference.x), 0) : new Vector2(0, Sign(difference.y));
+            penetration = radius + Math.min(gapX, gapY);
+        }
+
+        // Make the normal point from sprite to otherSprite
+        if (rect != sprite)
+            normal = normal.multiply(-1);
+
+        return new CollisionInfo(true, penetration, normal);
     }
 
-    /** Performs a circle collision test between two sprites.  */
-    private static CollisionInfo CircleCollisionTest(Sprite sprite, Sprite otherSprite, final float deltaTime)
+    /**
+     * Performs a circle collision test between two sprites.
+     * The normal points from sprite to otherSprite.
+     */
+    private static CollisionInfo CircleCollisionTest(Sprite sprite, Sprite otherSprite)
     {
         // Subtract the two positions
         final Vector2 positionSubtraction = otherSprite.getPosition().subtract(sprite.getPosition());
-        // Get the sum of the radii squared
-        final float radius = Radius(sprite);
-        final float radiiSumSquared = (float)Math.pow(radius + Radius(otherSprite), 2);
+        // Get the sum of the radii
+        final float radiiSum = Radius(sprite) + Radius(otherSprite);
 
-        // Check for a collision
-        if (positionSubtraction.dot(positionSubtraction) > radiiSumSquared)
+        // Check for a collision. Comparing squares avoids a square root when there's none.
+        if (positionSubtraction.dot(positionSubtraction) >= radiiSum * radiiSum)
             // No collision
             return new CollisionInfo();
 
@@ -93,10 +110,10 @@ public class Collision
         final float magnitude = positionSubtraction.magnitude();
 
         if (magnitude != 0)
-            return new CollisionInfo(true, radiiSumSquared - magnitude, positionSubtraction.divide(magnitude));
+            return new CollisionInfo(true, radiiSum - magnitude, positionSubtraction.divide(magnitude));
         else
             // Both sprites are in the same place
-            return new CollisionInfo(true, radius, new Vector2(1, 0));
+            return new CollisionInfo(true, radiiSum, new Vector2(1, 0));
     }
 
     /** Resolves a collision. */
@@ -129,31 +146,24 @@ public class Collision
     public static CollisionInfo HasCollidedWith(Sprite sprite, Sprite otherSprite, final float deltaTime)
     {
         if (sprite.getColliderShape() == ColliderShape.CIRCLE && otherSprite.getColliderShape() == ColliderShape.CIRCLE)
-            return CircleCollisionTest(sprite, otherSprite, deltaTime);
+            return CircleCollisionTest(sprite, otherSprite);
         else if (sprite.getColliderShape() == ColliderShape.RECTANGLE && otherSprite.getColliderShape() == ColliderShape.RECTANGLE)
-            return AABBCollisionTest(sprite, otherSprite, deltaTime);
+            return AABBCollisionTest(sprite, otherSprite);
         else
-            return AABBCircleCollisionTest(sprite, otherSprite, deltaTime);
+            return AABBCircleCollisionTest(sprite, otherSprite);
     }
 
-    /** Used to determine if a point intersects an AABB */
+    /** Used to determine if a point intersects a sprite's bounding box, edges included. */
     public static boolean PointAABBIntersectionTest(Sprite sprite, Vector2 point)
     {
-        Bitmap texture = sprite.getBitmap();
-        final Vector2 aabbHalfSize = new Vector2(texture.getWidth() / 2, texture.getHeight() / 2);
+        final Vector2 halfSize = sprite.boundingBoxSize.divide(2);
         final Vector2 spritePosition = sprite.getPosition();
 
         // Get bounds
-        RectangleArea bounds = new RectangleArea(spritePosition.x - aabbHalfSize.x, spritePosition.x + aabbHalfSize.x, spritePosition.y - aabbHalfSize.y, spritePosition.y + aabbHalfSize.y);
+        final RectangleArea bounds = new RectangleArea(spritePosition.x - halfSize.x, spritePosition.x + halfSize.x, spritePosition.y - halfSize.y, spritePosition.y + halfSize.y);
 
-        // Check for intersection
-        if (point.x >= bounds.minX && point.x <= bounds.maxX)
-            return true;
-        else if (point.y >= bounds.minY && point.y <= bounds.maxY)
-            return true;
-
-        // No intersection
-        return false;
+        // The point must be within the bounds on both axes
+        return bounds.contains(point);
     }
 
     /** Used to determine the radius of a sprites bounding box. */
@@ -161,5 +171,17 @@ public class Collision
     {
         Vector2 boundingBoxSize = sprite.boundingBoxSize;
         return (boundingBoxSize.x + boundingBoxSize.y) / 4;
+    }
+
+    /** Used to limit a value to the range -extent to extent. */
+    private static float Clamp(final float value, final float extent)
+    {
+        return Math.max(-extent, Math.min(value, extent));
+    }
+
+    /** Returns -1 for a negative value, otherwise 1. */
+    private static float Sign(final float value)
+    {
+        return (value < 0) ? -1 : 1;
     }
 }

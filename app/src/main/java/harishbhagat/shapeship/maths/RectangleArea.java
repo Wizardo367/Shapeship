@@ -33,17 +33,18 @@ public class RectangleArea
 
     // --- Functions(s)
 
-    /** Used to scale the size of the area. */
+    /** Returns a copy of the area scaled about its centre. This area is left unchanged. */
     public RectangleArea scale(final float scalar)
     {
-        // Calculate the adjustments needed
-        final float adjustmentX = ((maxX * scalar) - maxX) / 2;
-        final float adjustmentY = ((maxY * scalar) - maxY) / 2;
-        // Set the new values
-        minX -= adjustmentX;
-        maxX += adjustmentX;
-        minY -= adjustmentY;
-        maxY += adjustmentY;
-        return new RectangleArea(minX, maxX, minY, maxY);
+        // Half of the change in width and height goes on each side
+        final float adjustmentX = (maxX - minX) * (scalar - 1) / 2;
+        final float adjustmentY = (maxY - minY) * (scalar - 1) / 2;
+        return new RectangleArea(minX - adjustmentX, maxX + adjustmentX, minY - adjustmentY, maxY + adjustmentY);
+    }
+
+    /** Used to check whether a point lies inside the area, edges included. */
+    public boolean contains(final Vector2 point)
+    {
+        return point.x >= minX && point.x <= maxX && point.y >= minY && point.y <= maxY;
     }
 }

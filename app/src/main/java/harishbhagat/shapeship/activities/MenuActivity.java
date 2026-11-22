@@ -14,6 +14,7 @@ import java.lang.reflect.Type;
 import java.text.DecimalFormat;
 
 import harishbhagat.shapeship.R;
+import harishbhagat.shapeship.game.HighScore;
 
 public class MenuActivity extends AppCompatActivity
 {
@@ -37,7 +38,7 @@ public class MenuActivity extends AppCompatActivity
 
         // Get high-score
         SharedPreferences preferences = this.getSharedPreferences("shapeship_preferences", Context.MODE_PRIVATE);
-        Integer existingScore = preferences.getInt(getString(R.string.high_score), 0);
+        final int existingScore = HighScore.read(preferences);
 
         scoreText.setText(new DecimalFormat("000000").format(existingScore));
     }

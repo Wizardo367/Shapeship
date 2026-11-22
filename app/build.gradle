@@ -29,6 +29,13 @@ android {
         targetCompatibility = JavaVersion.VERSION_17
     }
 
+    testOptions {
+        // Unit tests run on the JVM against a stub android.jar. Sprite creates a Matrix, so
+        // the stubs must return default values instead of throwing. Step 5 separates the game
+        // model from Android, after which this can go.
+        unitTests.returnDefaultValues = true
+    }
+
     lint {
         // Records the problems the 2016 code already had, so that only new ones fail the build.
         // The sw-only drawables (MissingDefaultResource) go in step 3.

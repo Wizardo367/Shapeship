@@ -5,10 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import java.sql.Time;
-import java.util.Vector;
-import java.util.concurrent.TimeUnit;
-
 import harishbhagat.shapeship.R;
 import harishbhagat.shapeship.graphics.DisplayUtilities;
 import harishbhagat.shapeship.graphics.Sprite;
@@ -27,9 +23,8 @@ public class Player extends Sprite implements Cannon
     // --- Member(s)
 
     public BulletSpawner bulletSpawner; /** Bullet spawner for the player */
-    private Context context;
-    private int cannonCooldown = 1000; // Measured in milliseconds
-    private long lastShot = System.nanoTime();
+    private final Cooldown cannonCooldown = new Cooldown(1000); // Measured in milliseconds
+    private final float screenWidth;
 
     // --- Constructor(s)
 
@@ -40,7 +35,7 @@ public class Player extends Sprite implements Cannon
         super(null, false, ColliderShape.RECTANGLE, 0);
         // Set the variables
         this.bulletSpawner = new BulletSpawner(this, new Bullet(BulletType.PLAYER, context), new Vector2(0, -35), 2, boundaries, context);
-        this.context = context;
+        this.screenWidth = new DisplayUtilities(context).getScreenSize().maxX;
         // Load the texture
         Bitmap texture = BitmapFactory.decodeResource(context.getResources(), R.drawable.shapeship);
         // Set the texture
@@ -49,23 +44,34 @@ public class Player extends Sprite implements Cannon
 
     // --- Function(s)
 
-    /** Used to fire a bullet. */
+    /** Used to fire a bullet. Returns true if a bullet was fired. */
     public boolean fire()
     {
+        final long now = System.nanoTime();
+
+        // Check if the cooldown period has ended
+        if (!cannonCooldown.isReady(now)) return false;
+
         try
         {
-            // Check if the cooldown period has ended
-            if (TimeUnit.NANOSECONDS.toSeconds(System.nanoTime() - lastShot) >= TimeUnit.MILLISECONDS.toSeconds(cannonCooldown))
-            {
-                // Spawn bullet
-                bulletSpawner.spawn();
-                return true;
-            }
+            // Spawn bullet; this fails when too many of the player's bullets are on screen
+            if (!bulletSpawner.spawn()) return false;
         }
-        catch (CloneNotSupportedException e) { Log.e("SPAWNER ERROR", "CloneNotSupportedException"); };
+        catch (CloneNotSupportedException e)
+        {
+            Log.e("SPAWNER ERROR", "CloneNotSupportedException");
+            return false;
+        }
 
-        // Cooldown has not ended
-        return false;
+        cannonCooldown.use(now);
+        return true;
+    }
+
+    /** Returns the nearest x position at which a sprite of the given width is wholly on screen. */
+    static float clampToScreen(final float x, final float width, final float screenWidth)
+    {
+        final float halfWidth = width / 2;
+        return Math.max(halfWidth, Math.min(x, screenWidth - halfWidth));
     }
 
     // --- Method(s)
@@ -91,15 +97,7 @@ public class Player extends Sprite implements Cannon
     public void setPosition(Vector2 position)
     {
         // Prevent the player from going off-screen
-        DisplayUtilities displayUtilities = new DisplayUtilities(context);
-
-        float halfTextureWidth = this.texture.getWidth() / 2.f;
-        int screenWidth = (int) displayUtilities.getScreenSize().maxX;
-
-        if (position.x >= 0 && position.x < halfTextureWidth)
-            position.x += halfTextureWidth;
-        else if (position.x > screenWidth - halfTextureWidth && position.x <= screenWidth)
-            position.x -= halfTextureWidth;
+        position.x = clampToScreen(position.x, this.boundingBoxSize.x, screenWidth);
 
         super.setPosition(position);
     }

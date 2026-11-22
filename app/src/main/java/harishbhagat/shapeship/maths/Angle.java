@@ -9,7 +9,7 @@ public class Angle
 {
     // --- Function(s)
 
-    /** Normalises an angle so that it falls within the range of -90 to 90 degrees. */
+    /** Clamps an angle to the range -90 to 90 degrees. */
     public static float Normalise180(float angle)
     {
         // Make the angle fall within the range of -90 to 90 degrees
@@ -21,15 +21,13 @@ public class Angle
         return angle;
     }
 
-    /** Normalises an angle so that it falls within the range of 0 to 359 degrees. */
+    /** Wraps an angle into the range 0 (inclusive) to 360 (exclusive) degrees. */
     public static float Normalise360(float angle)
     {
-        // Make the angle fall within the range of 0 to 359 degrees
+        // Java's % keeps the sign of the angle, so a negative remainder needs 360 added.
+        angle %= 360;
         if (angle < 0)
-            angle *= -1;
-
-        if (angle > 359)
-            angle %= 360;
+            angle += 360;
 
         return angle;
     }

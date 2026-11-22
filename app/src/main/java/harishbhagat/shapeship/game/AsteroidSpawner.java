@@ -1,11 +1,9 @@
 package harishbhagat.shapeship.game;
 
 import android.content.Context;
-import android.util.Log;
 
 import java.util.Random;
 
-import harishbhagat.shapeship.graphics.DisplayUtilities;
 import harishbhagat.shapeship.graphics.Sprite;
 import harishbhagat.shapeship.maths.RectangleArea;
 import harishbhagat.shapeship.maths.Vector2;
@@ -17,12 +15,23 @@ import harishbhagat.shapeship.maths.Vector2;
  */
 public class AsteroidSpawner extends RandomSpawner
 {
+    // --- Member(s)
+
+    /** Asteroids spawn no lower than this fraction of the screen height, so none appear beside the player. */
+    static final float MAX_SPAWN_HEIGHT = 0.6f;
+
     // --- Constructor(s)
 
     /** Default constructor. */
-    public AsteroidSpawner(Context context, final int maxSpawn, final RectangleArea boundaries)
+    public AsteroidSpawner(Context context, final int maxSpawn, final RectangleArea boundaries, final RectangleArea screen)
     {
-        super(new Asteroid(context), maxSpawn, boundaries, context);
+        this(new Asteroid(context), maxSpawn, boundaries, screen, new Random(), context);
+    }
+
+    /** Constructor that takes the asteroid and the source of randomness, for tests. */
+    AsteroidSpawner(final Sprite asteroid, final int maxSpawn, final RectangleArea boundaries, final RectangleArea screen, final Random random, Context context)
+    {
+        super(asteroid, maxSpawn, boundaries, screen, random, context);
     }
 
     // --- Function(s)
@@ -31,34 +40,19 @@ public class AsteroidSpawner extends RandomSpawner
     @Override
     public boolean spawn() throws CloneNotSupportedException
     {
-        DisplayUtilities displayUtilities = new DisplayUtilities(context);
+        if (!super.spawn()) return false;
 
-        // Spawn asteroid
-        if (entities.size() < maxSpawn)
-        {
-            // Create a new entity
-            Sprite newEntity = (Sprite) this.entity.clone();
+        // Make the asteroid fall at between 50 and 150 pixels per second
+        final Sprite asteroid = entities.lastElement();
+        asteroid.setVelocity(new Vector2(0, random.nextInt(100) + 50));
+        return true;
+    }
 
-            // Position the entity randomly
-            newEntity.setPosition(getRandomPosition());
-            Vector2 entityPosition = newEntity.getPosition();
-
-            // Ensure nothing spawns below the player
-            final float maxSpawnY = displayUtilities.getScreenSize().maxY * 0.6f;
-            if (entityPosition.y > maxSpawnY) entityPosition.y = maxSpawnY;
-
-            // Add an impulse to the asteroid
-            Random random = new Random();
-            // Make the impulse between 50 and 150
-            int randomY = random.nextInt(100) + 50;
-            // Apply the impulse
-            newEntity.setVelocity(new Vector2(0, randomY));
-
-            // Add the entity
-            this.entities.addElement(newEntity);
-
-            return true;
-        }
-        return false;
+    /** Overridden method that keeps asteroids from spawning beside or below the player. */
+    @Override
+    protected RectangleArea getSpawnArea()
+    {
+        final RectangleArea area = super.getSpawnArea();
+        return new RectangleArea(area.minX, area.maxX, area.minY, Math.min(area.maxY, screen.maxY * MAX_SPAWN_HEIGHT));
     }
 }

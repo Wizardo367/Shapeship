@@ -37,16 +37,10 @@ public class BulletSpawner extends Spawner
         // Check the current number of spawned entities
         if (entities.size() < maxSpawn)
         {
-            // Set the spawn position
-            final Vector2 shooterPosition = shooter.getPosition();
-            Vector2 spawnPosition = new Vector2(shooterPosition.x, shooterPosition.y);
-            spawnPosition.y += margins.y + shooter.getBitmap().getHeight();
-            // Rotate the bitmap to the direction of the player
-            spawnPosition.rotate(shooter.getRotation());
-            // Offset the vector
-            spawnPosition.add(margins);
+            // Start the bullet beyond the shooter's edge
+            final Vector2 spawnPosition = spawnPosition(shooter.getPosition(), shooter.boundingBoxSize, shooter.getRotation(), margins);
             // Create the bullet
-            Bullet newBullet = (Bullet) this.entity.clone();
+            Sprite newBullet = (Sprite) this.entity.clone();
             newBullet.setPosition(spawnPosition);
             // Apply an impulse
             newBullet.impulse(new Vector2(0, -500));
@@ -55,5 +49,16 @@ public class BulletSpawner extends Spawner
             return true;
         }
         return false;
+    }
+
+    /**
+     * Returns where a bullet starts: beyond the edge of the shooter that the margin points to
+     * (up for a negative margin, down for a positive one), turned with the shooter.
+     */
+    static Vector2 spawnPosition(final Vector2 shooterPosition, final Vector2 shooterSize, final float shooterRotation, final Vector2 margins)
+    {
+        final Vector2 offset = new Vector2(margins.x, margins.y + Math.signum(margins.y) * shooterSize.y / 2);
+        offset.rotate(shooterRotation);
+        return shooterPosition.add(offset);
     }
 }

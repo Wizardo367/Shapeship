@@ -130,14 +130,16 @@ public class Vector2
         final double rad = Math.toRadians(angle);
         final double cos = Math.cos(rad);
         final double sin = Math.sin(rad);
-        // Rotate the vector
-        this.x = (float) (this.x * cos - this.y * sin);
-        this.y = (float) (this.x * sin + this.y * cos);
+        // Rotate the vector. Both lines use the original x, so keep it.
+        final float oldX = this.x;
+        this.x = (float) (oldX * cos - this.y * sin);
+        this.y = (float) (oldX * sin + this.y * cos);
     }
 
-    /** Used to scale the vector. */
+    /** Used to scale the vector in place. */
     public void scale(float scalar)
     {
-        this.multiply(scalar);
+        this.x *= scalar;
+        this.y *= scalar;
     }
 }

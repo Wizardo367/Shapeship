@@ -4,17 +4,6 @@
     <issue
         id="ApplySharedPref"
         message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
-        errorLine1="                    editor.commit();"
-        errorLine2="                           ~~~~~~~~">
-        <location
-            file="src/main/java/harishbhagat/shapeship/game/GameSurfaceView.java"
-            line="329"
-            column="28"/>
-    </issue>
-
-    <issue
-        id="ApplySharedPref"
-        message="Consider using `apply()` instead; `commit` writes its data to persistent storage immediately, whereas `apply` will handle it in the background"
         errorLine1="            editor.commit();"
         errorLine2="                   ~~~~~~~~">
         <location
@@ -336,7 +325,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="41"
+            line="48"
             column="20"/>
     </issue>
 
@@ -866,23 +855,12 @@
 
     <issue
         id="ClickableViewAccessibility"
-        message="Custom view ``GameSurfaceView`` has `setOnTouchListener` called on it but does not override `performClick`"
-        errorLine1="        this.setOnTouchListener(new OnTouchListener()"
-        errorLine2="        ^">
+        message="`onTouch` lambda should call `View#performClick` when a click is detected"
+        errorLine1="        setOnTouchListener((view, event) ->"
+        errorLine2="                           ^">
         <location
             file="src/main/java/harishbhagat/shapeship/game/GameSurfaceView.java"
-            line="187"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
-        message="`onTouch` should call `View#performClick` when a click is detected"
-        errorLine1="            public boolean onTouch(View v, MotionEvent event)"
-        errorLine2="                           ~~~~~~~">
-        <location
-            file="src/main/java/harishbhagat/shapeship/game/GameSurfaceView.java"
-            line="190"
+            line="137"
             column="28"/>
     </issue>
 
