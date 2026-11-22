@@ -5,7 +5,8 @@ import harishbhagat.shapeship.maths.Vector2;
 import harishbhagat.shapeship.physics.Body;
 
 /**
- * Used to spawn the bullets a body fires.
+ * Used to spawn bullets: the ship's, or the UFOs'. There's no limit on how many are in flight;
+ * each is removed once it leaves the boundaries.
  *
  * Created by Harish Bhagat on 28/03/2016.
  */
@@ -13,37 +14,34 @@ public class BulletSpawner extends Spawner
 {
     // --- Member(s)
 
-    /** A bullet's speed when fired, in pixels per second. Negative is up the screen. */
-    static final float SPEED = -500;
-
-    private final Body shooter;
     private final Vector2 margins;
+    private final Vector2 velocity;
 
     // --- Constructor(s)
 
-    /** Default constructor. Spawned bullets are copies of the given one. */
-    public BulletSpawner(final Body shooter, final Body bullet, final Vector2 margins, final int maxSpawn, final RectangleArea boundaries)
+    /**
+     * Default constructor. Spawned bullets are copies of the given one, start beyond the
+     * shooter's edge by the margins, and move at the given velocity in pixels per second.
+     */
+    public BulletSpawner(final Body bullet, final Vector2 margins, final Vector2 velocity, final RectangleArea boundaries)
     {
-        super(bullet, maxSpawn, boundaries);
+        super(bullet, Integer.MAX_VALUE, boundaries);
         this.margins = margins;
-        this.shooter = shooter;
+        this.velocity = velocity;
+    }
+
+    // --- Method(s)
+
+    /** Used to fire a bullet from the given shooter. */
+    public void spawn(final Body shooter)
+    {
+        final Body newBullet = entity.clone();
+        newBullet.setPosition(spawnPosition(shooter.getPosition(), shooter.boundingBoxSize, shooter.getRotation(), margins));
+        newBullet.setVelocity(new Vector2(velocity));
+        entities.add(newBullet);
     }
 
     // --- Function(s)
-
-    /** Used to spawn a new bullet. Returns false if too many are already on screen. */
-    @Override
-    public boolean spawn()
-    {
-        if (entities.size() >= maxSpawn) return false;
-
-        // Start the bullet beyond the shooter's edge
-        final Body newBullet = entity.clone();
-        newBullet.setPosition(spawnPosition(shooter.getPosition(), shooter.boundingBoxSize, shooter.getRotation(), margins));
-        newBullet.impulse(new Vector2(0, SPEED));
-        entities.add(newBullet);
-        return true;
-    }
 
     /**
      * Returns where a bullet starts: beyond the edge of the shooter that the margin points to

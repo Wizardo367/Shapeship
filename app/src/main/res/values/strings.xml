@@ -30,7 +30,7 @@
     <string name="settings_instructions">Use the options above to adjust the game’s settings to your liking. Once you have done so press the button below to return to the main menu.</string>
 
     <!-- Help -->
-    <string name="help_aim">The aim of the game is to destroy as many asteroids as possible without being hit.</string>
-    <string name="help_controls">To destroy objects you must fire at them, a single-tap on the screen will fire a laser beam.</string>
+    <string name="help_aim">The aim of the game is to destroy as many asteroids as possible without being hit. From 250 points, UFOs join in: shoot them for 50 points, and dodge their fire.</string>
+    <string name="help_controls">Tilt the phone to steer the ship. A single tap on the screen fires a laser beam.</string>
     <string name="help_tap_image">A finger tapping the screen</string>
 </resources>

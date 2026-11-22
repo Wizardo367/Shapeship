@@ -21,9 +21,9 @@ import harishbhagat.shapeship.maths.Vector2;
 import harishbhagat.shapeship.model.Game;
 
 /**
- * The view the game is played in. It connects the game model to Android: taps go to the game,
- * a GameLoop runs it and a GameRenderer draws it, and what happens in it plays sounds, saves
- * the high score and changes screens.
+ * The view the game is played in. It connects the game model to Android: taps and the phone's
+ * tilt go to the game, a GameLoop runs it and a GameRenderer draws it, and what happens in it
+ * plays sounds, saves the high score and changes screens.
  *
  * Created by Harish Bhagat on 26/03/2016.
  */
@@ -36,6 +36,7 @@ public class GameSurfaceView extends SurfaceView
     private final Audio audio;
     private final Typeface typeface;
     private final GameLoop loop;
+    private final TiltSensor tiltSensor;
 
     // The latest tap not yet handled, handed from the UI thread to the game thread
     private final AtomicReference<Vector2> pendingTap = new AtomicReference<>();
@@ -61,6 +62,7 @@ public class GameSurfaceView extends SurfaceView
         audio.loadVolumes(preferences);
 
         loop = new GameLoop(getHolder(), scene);
+        tiltSensor = new TiltSensor(context);
 
         // Record taps for the game thread. The listener is set once, here on the UI thread.
         setOnTouchListener((view, event) ->
@@ -77,6 +79,7 @@ public class GameSurfaceView extends SurfaceView
     public void pause()
     {
         audio.pauseMusic();
+        tiltSensor.stop();
         loop.stop();
     }
 
@@ -84,6 +87,7 @@ public class GameSurfaceView extends SurfaceView
     public void resume()
     {
         audio.startMusic();
+        tiltSensor.start();
         loop.start();
     }
 
@@ -108,6 +112,7 @@ public class GameSurfaceView extends SurfaceView
         @Override
         public void frame(final Canvas canvas, final float deltaTime)
         {
+            game.setTilt(tiltSensor.steering());
             final Vector2 tap = pendingTap.getAndSet(null);
             if (tap != null) game.tap(tap);
             game.update(deltaTime);
@@ -121,6 +126,12 @@ public class GameSurfaceView extends SurfaceView
     {
         @Override
         public void onShot()
+        {
+            audio.play(Sound.SHOOT);
+        }
+
+        @Override
+        public void onEnemyShot()
         {
             audio.play(Sound.SHOOT);
         }

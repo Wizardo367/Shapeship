@@ -14,6 +14,7 @@ import harishbhagat.shapeship.model.Asteroid;
 import harishbhagat.shapeship.model.Bullet;
 import harishbhagat.shapeship.model.Game;
 import harishbhagat.shapeship.model.Player;
+import harishbhagat.shapeship.model.Ufo;
 import harishbhagat.shapeship.physics.Body;
 
 /**
@@ -29,6 +30,8 @@ final class GameRenderer
     private final Bitmap bullet;
     private final Bitmap asteroid;
     private final Bitmap pauseButton;
+    private final Bitmap ufo;
+    private final Bitmap enemyBullet;
     private final ScoreDisplay scoreDisplay;
     private final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
     private final Matrix matrix = new Matrix(); /** Reused for each body drawn. */
@@ -45,6 +48,8 @@ final class GameRenderer
         bullet = Textures.render(context, R.drawable.bullet, Textures.pixels(width, Bullet.WIDTH_FRACTION));
         asteroid = Textures.render(context, R.drawable.asteroid, Textures.pixels(width, Asteroid.WIDTH_FRACTION));
         pauseButton = Textures.render(context, R.drawable.pause_button, Textures.pixels(width, Game.PAUSE_BUTTON_WIDTH));
+        ufo = Textures.render(context, R.drawable.ufo, Textures.pixels(width, Ufo.WIDTH_FRACTION));
+        enemyBullet = Textures.render(context, R.drawable.enemy_bullet, Textures.pixels(width, Bullet.WIDTH_FRACTION));
 
         scoreDisplay = new ScoreDisplay(typeface, width);
     }
@@ -54,7 +59,7 @@ final class GameRenderer
     /** Returns the sizes of the textures, for the game to use as the sizes of what they draw. */
     Game.Sizes sizes()
     {
-        return new Game.Sizes(size(ship), size(bullet), size(asteroid), size(pauseButton));
+        return new Game.Sizes(size(ship), size(bullet), size(asteroid), size(pauseButton), size(ufo), size(enemyBullet));
     }
 
     private static Vector2 size(final Bitmap bitmap)
@@ -72,6 +77,11 @@ final class GameRenderer
 
         for (Body body : game.asteroids())
             draw(canvas, asteroid, body);
+
+        if (game.ufo() != null) draw(canvas, ufo, game.ufo());
+
+        for (Body body : game.enemyBullets())
+            draw(canvas, enemyBullet, body);
 
         draw(canvas, ship, game.player());
 

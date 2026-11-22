@@ -34,7 +34,6 @@ public class RandomSpawner extends Spawner
     // --- Function(s)
 
     /** Used to spawn a new body. Returns false if the spawner is full or no free position was found. */
-    @Override
     public boolean spawn()
     {
         if (entities.size() >= maxSpawn) return false;

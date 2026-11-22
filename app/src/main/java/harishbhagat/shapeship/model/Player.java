@@ -6,8 +6,8 @@ import harishbhagat.shapeship.physics.Body;
 import harishbhagat.shapeship.physics.ColliderShape;
 
 /**
- * The player's ship. It stays on screen, and fires on every tap: there's no cooldown and no
- * limit on bullets, which are removed once they leave the boundaries.
+ * The player's ship. Tilting the phone steers it along the bottom of the screen, and it fires
+ * on every tap. It always stays wholly on screen.
  *
  * Created by Harish Bhagat on 28/03/2016.
  */
@@ -19,6 +19,10 @@ public class Player extends Body
     public static final float WIDTH_FRACTION = 0.13f;
     /** How far above the nose a bullet starts, in bullet heights. */
     static final float BULLET_GAP = 0.75f;
+    /** A bullet's speed in pixels per second. Negative is up the screen. */
+    static final float BULLET_SPEED = -500;
+    /** The ship's speed at full tilt, in screen widths per second. */
+    static final float MAX_SPEED = 1.2f;
 
     public final BulletSpawner bulletSpawner; /** The player's bullets. */
     private final float screenWidth;
@@ -31,16 +35,10 @@ public class Player extends Body
         super(size, false, ColliderShape.RECTANGLE, 0);
         this.screenWidth = screenWidth;
         final Vector2 margins = new Vector2(0, -BULLET_GAP * bulletSize.y);
-        this.bulletSpawner = new BulletSpawner(this, new Bullet(bulletSize), margins, Integer.MAX_VALUE, boundaries);
+        this.bulletSpawner = new BulletSpawner(new Bullet(bulletSize), margins, new Vector2(0, BULLET_SPEED), boundaries);
     }
 
     // --- Function(s)
-
-    /** Used to fire a bullet. */
-    public void fire()
-    {
-        bulletSpawner.spawn();
-    }
 
     /** Returns the nearest x position at which a body of the given width is wholly on screen. */
     static float clampToScreen(final float x, final float width, final float screenWidth)
@@ -50,6 +48,22 @@ public class Player extends Body
     }
 
     // --- Method(s)
+
+    /** Used to fire a bullet. */
+    public void fire()
+    {
+        bulletSpawner.spawn(this);
+    }
+
+    /**
+     * Used to move the ship sideways for the given number of seconds. The tilt runs from -1
+     * (full speed left) to 1 (full speed right); see Tilt.
+     */
+    public void steer(final float tilt, final float deltaTime)
+    {
+        final float speed = Math.max(-1, Math.min(tilt, 1)) * MAX_SPEED * screenWidth;
+        setPosition(new Vector2(getPosition().x + speed * deltaTime, getPosition().y));
+    }
 
     /** Overridden method that keeps the whole ship on screen. */
     @Override

@@ -9,6 +9,11 @@
         android:xlargeScreens="true" >
     </supports-screens>
 
+    <!-- Tilting the phone steers the ship -->
+    <uses-feature
+        android:name="android.hardware.sensor.accelerometer"
+        android:required="true" />
+
     <application
         android:allowBackup="true"
         android:appCategory="game"

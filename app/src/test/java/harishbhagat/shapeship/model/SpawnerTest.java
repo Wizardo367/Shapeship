@@ -13,14 +13,7 @@ public class SpawnerTest
 {
     private static Spawner spawner()
     {
-        return new Spawner(circle(0, 0, 10), 10, new RectangleArea(0, 100, 0, 100))
-        {
-            @Override
-            public boolean spawn()
-            {
-                return false;
-            }
-        };
+        return new Spawner(circle(0, 0, 10), 10, new RectangleArea(0, 100, 0, 100)) {};
     }
 
     @Test

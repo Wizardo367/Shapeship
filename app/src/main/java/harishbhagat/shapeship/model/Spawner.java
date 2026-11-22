@@ -9,7 +9,8 @@ import harishbhagat.shapeship.maths.Vector2;
 import harishbhagat.shapeship.physics.Body;
 
 /**
- * Abstract class used for spawning copies of a body and removing them once they leave the boundaries.
+ * Abstract class used for managing copies of a body, which subclasses spawn, and removing them
+ * once they leave the boundaries.
  *
  * Created by Harish Bhagat on 28/03/2016.
  */
@@ -45,9 +46,6 @@ public abstract class Spawner
     {
         return entities.get(entities.size() - 1);
     }
-
-    /** Used to spawn a new body. Returns false if none was spawned. */
-    public abstract boolean spawn();
 
     // --- Method(s)
 
