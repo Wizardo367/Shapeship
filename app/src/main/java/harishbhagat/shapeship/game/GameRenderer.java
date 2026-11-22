@@ -2,7 +2,6 @@ package harishbhagat.shapeship.game;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
@@ -39,10 +38,8 @@ final class GameRenderer
     /** Draws the textures for a screen of the given size in pixels. */
     GameRenderer(final Context context, final Typeface typeface, final int width, final int height)
     {
-        // Scale the background to fill the screen, once
-        final Bitmap original = BitmapFactory.decodeResource(context.getResources(), R.drawable.background_0);
-        background = Bitmap.createScaledBitmap(original, width, height, true);
-        if (background != original) original.recycle();
+        // Fit the background to the screen once, cropped like the menus' rather than stretched
+        background = Textures.renderCentreCropped(context, R.drawable.background_0, width, height);
 
         ship = Textures.render(context, R.drawable.shapeship, Textures.pixels(width, Player.WIDTH_FRACTION));
         bullet = Textures.render(context, R.drawable.bullet, Textures.pixels(width, Bullet.WIDTH_FRACTION));

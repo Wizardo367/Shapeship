@@ -120,10 +120,10 @@ public final class Game
     // --- Method(s)
 
     /**
-     * Handles a tap at the given point, at the given time from System.nanoTime(). Tapping the
-     * pause button asks for a pause; tapping anywhere else moves the ship below the tap and fires.
+     * Handles a tap at the given point. Tapping the pause button asks for a pause; tapping
+     * anywhere else moves the ship below the tap and fires.
      */
-    public void tap(final Vector2 point, final long nowNanos)
+    public void tap(final Vector2 point)
     {
         if (over) return;
 
@@ -134,7 +134,8 @@ public final class Game
         }
 
         player.setPosition(new Vector2(point.x, player.getPosition().y));
-        if (player.fire(nowNanos)) listener.onShot();
+        player.fire();
+        listener.onShot();
     }
 
     /** Spawns asteroids, moves everything on by the given number of seconds and handles collisions. */

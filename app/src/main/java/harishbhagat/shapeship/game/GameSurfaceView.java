@@ -109,7 +109,7 @@ public class GameSurfaceView extends SurfaceView
         public void frame(final Canvas canvas, final float deltaTime)
         {
             final Vector2 tap = pendingTap.getAndSet(null);
-            if (tap != null) game.tap(tap, System.nanoTime());
+            if (tap != null) game.tap(tap);
             game.update(deltaTime);
             renderer.draw(canvas, game);
         }

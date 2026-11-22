@@ -6,7 +6,8 @@ import harishbhagat.shapeship.physics.Body;
 import harishbhagat.shapeship.physics.ColliderShape;
 
 /**
- * The player's ship. It stays on screen, and fires at most once a second.
+ * The player's ship. It stays on screen, and fires on every tap: there's no cooldown and no
+ * limit on bullets, which are removed once they leave the boundaries.
  *
  * Created by Harish Bhagat on 28/03/2016.
  */
@@ -18,13 +19,8 @@ public class Player extends Body
     public static final float WIDTH_FRACTION = 0.13f;
     /** How far above the nose a bullet starts, in bullet heights. */
     static final float BULLET_GAP = 0.75f;
-    /** The most of the player's bullets on screen at once. */
-    static final int MAX_BULLETS = 2;
-    /** The shortest time between shots. */
-    static final long COOLDOWN_MILLIS = 1000;
 
     public final BulletSpawner bulletSpawner; /** The player's bullets. */
-    private final Cooldown cannonCooldown = new Cooldown(COOLDOWN_MILLIS);
     private final float screenWidth;
 
     // --- Constructor(s)
@@ -35,19 +31,15 @@ public class Player extends Body
         super(size, false, ColliderShape.RECTANGLE, 0);
         this.screenWidth = screenWidth;
         final Vector2 margins = new Vector2(0, -BULLET_GAP * bulletSize.y);
-        this.bulletSpawner = new BulletSpawner(this, new Bullet(bulletSize), margins, MAX_BULLETS, boundaries);
+        this.bulletSpawner = new BulletSpawner(this, new Bullet(bulletSize), margins, Integer.MAX_VALUE, boundaries);
     }
 
     // --- Function(s)
 
-    /** Used to fire a bullet, given the time from System.nanoTime(). Returns true if a bullet was fired. */
-    public boolean fire(final long nowNanos)
+    /** Used to fire a bullet. */
+    public void fire()
     {
-        // Wait for the cooldown, and for a bullet to leave if too many are on screen
-        if (!cannonCooldown.isReady(nowNanos) || !bulletSpawner.spawn()) return false;
-
-        cannonCooldown.use(nowNanos);
-        return true;
+        bulletSpawner.spawn();
     }
 
     /** Returns the nearest x position at which a body of the given width is wholly on screen. */

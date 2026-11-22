@@ -15,7 +15,6 @@ import harishbhagat.shapeship.physics.Body;
 public class GameTest
 {
     private static final float DELTA = 1e-3f;
-    private static final long SECOND = 1_000_000_000L;
     private static final float WIDTH = 1000;
     private static final float HEIGHT = 2000;
     /** Sizes as the renderer would give them on a 1000-pixel-wide screen. */
@@ -55,7 +54,7 @@ public class GameTest
     @Test
     public void tappingThePauseButtonAsksForAPauseWithoutFiring()
     {
-        game.tap(game.pauseButton().getPosition(), 0);
+        game.tap(game.pauseButton().getPosition());
 
         assertEquals(1, events.pauses);
         assertEquals(0, events.shots);
@@ -67,7 +66,7 @@ public class GameTest
     {
         final float shipY = game.player().getPosition().y;
 
-        game.tap(new Vector2(300, 900), 0);
+        game.tap(new Vector2(300, 900));
 
         assertEquals(new Vector2(300, shipY), game.player().getPosition());
         assertEquals(1, events.shots);
@@ -77,23 +76,23 @@ public class GameTest
     }
 
     @Test
-    public void theShipFiresAtMostOnceASecond()
+    public void theShipFiresOnEveryTap()
     {
-        game.tap(new Vector2(300, 900), 0);
-        game.tap(new Vector2(600, 900), SECOND / 2);
+        // The 2016 game allowed two bullets on screen at once, and step 2 made a one-second
+        // cooldown work; both were removed
+        for (int i = 0; i < 10; ++i)
+            game.tap(new Vector2(100 + 50 * i, 900));
 
-        // The ship still moves
-        assertEquals(600, game.player().getPosition().x, DELTA);
-        assertEquals(1, events.shots);
-
-        game.tap(new Vector2(600, 900), SECOND);
-        assertEquals(2, events.shots);
+        assertEquals(10, events.shots);
+        assertEquals(10, game.bullets().size());
+        // The ship still moves under each tap
+        assertEquals(550, game.player().getPosition().x, DELTA);
     }
 
     @Test
     public void bulletsMoveUpTheScreen()
     {
-        game.tap(new Vector2(300, 900), 0);
+        game.tap(new Vector2(300, 900));
         final float startY = game.bullets().get(0).getPosition().y;
 
         game.update(0.1f);
@@ -116,7 +115,7 @@ public class GameTest
     public void shootingAnAsteroidScoresAndExplodes()
     {
         final Body asteroid = spawnAsteroid();
-        game.tap(new Vector2(300, 900), 0);
+        game.tap(new Vector2(300, 900));
         final Vector2 bullet = game.bullets().get(0).getPosition();
 
         // Just above the bullet, clear of the ship
@@ -146,7 +145,7 @@ public class GameTest
         // Nothing more happens once the game is over
         final Vector2 shipPosition = new Vector2(game.player().getPosition());
         game.update(1);
-        game.tap(new Vector2(100, 900), 10 * SECOND);
+        game.tap(new Vector2(100, 900));
         assertEquals(1, events.gameOvers);
         assertEquals(0, events.shots);
         assertEquals(shipPosition, game.player().getPosition());

@@ -4,6 +4,9 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import harishbhagat.shapeship.maths.RectangleArea;
+import harishbhagat.shapeship.maths.Vector2;
+
 public class PlayerTest
 {
     private static final float DELTA = 1e-4f;
@@ -22,5 +25,18 @@ public class PlayerTest
     public void leavesPositionsOnScreenAlone()
     {
         assertEquals(400, Player.clampToScreen(400, 100, 1000), DELTA);
+    }
+
+    @Test
+    public void firesEveryTime()
+    {
+        final Player player = new Player(new Vector2(130, 127), new Vector2(13, 45), new RectangleArea(-100, 1100, -200, 2200), 1000);
+        player.setPosition(new Vector2(500, 1800));
+
+        // No cooldown and no limit on bullets
+        for (int i = 0; i < 20; ++i)
+            player.fire();
+
+        assertEquals(20, player.bulletSpawner.numberOfSpawned());
     }
 }

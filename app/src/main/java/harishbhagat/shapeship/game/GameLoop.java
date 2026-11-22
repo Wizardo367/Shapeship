@@ -1,6 +1,7 @@
 package harishbhagat.shapeship.game;
 
 import android.graphics.Canvas;
+import android.graphics.PixelFormat;
 import android.os.Process;
 import android.view.SurfaceHolder;
 
@@ -44,6 +45,10 @@ final class GameLoop implements Runnable, SurfaceHolder.Callback
     {
         this.holder = holder;
         this.scene = scene;
+        // A SurfaceView draws in 16-bit colour (RGB 565) unless asked otherwise, which bands the
+        // dark background into green and purple patches. The menus draw in 32-bit colour, so
+        // match them. The game draws every pixel, so the surface needs no alpha channel.
+        holder.setFormat(PixelFormat.RGBX_8888);
         holder.addCallback(this);
     }
 
