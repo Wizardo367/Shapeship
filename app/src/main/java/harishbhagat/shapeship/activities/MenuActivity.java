@@ -4,19 +4,17 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.activity.ComponentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import java.lang.reflect.Type;
-import java.text.DecimalFormat;
-
 import harishbhagat.shapeship.R;
 import harishbhagat.shapeship.game.HighScore;
+import harishbhagat.shapeship.game.ScoreFormat;
 
-public class MenuActivity extends AppCompatActivity
+public class MenuActivity extends ComponentActivity
 {
 
     @Override
@@ -40,7 +38,7 @@ public class MenuActivity extends AppCompatActivity
         SharedPreferences preferences = this.getSharedPreferences("shapeship_preferences", Context.MODE_PRIVATE);
         final int existingScore = HighScore.read(preferences);
 
-        scoreText.setText(new DecimalFormat("000000").format(existingScore));
+        scoreText.setText(ScoreFormat.format(existingScore));
     }
 
     /** Start the game when the play button is . */

@@ -1,12 +1,8 @@
 package harishbhagat.shapeship.game;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import harishbhagat.shapeship.R;
-import harishbhagat.shapeship.graphics.DisplayUtilities;
 import harishbhagat.shapeship.graphics.Sprite;
 import harishbhagat.shapeship.maths.Angle;
 import harishbhagat.shapeship.maths.RectangleArea;
@@ -22,24 +18,24 @@ public class Player extends Sprite implements Cannon
 {
     // --- Member(s)
 
+    /** The ship's width as a fraction of the screen width. */
+    public static final float WIDTH_FRACTION = 0.13f;
+    /** How far above the nose a bullet starts, in bullet heights. */
+    static final float BULLET_GAP = 0.75f;
+
     public BulletSpawner bulletSpawner; /** Bullet spawner for the player */
     private final Cooldown cannonCooldown = new Cooldown(1000); // Measured in milliseconds
     private final float screenWidth;
 
     // --- Constructor(s)
 
-    /** Default constructor. */
-    public Player(Context context, final RectangleArea boundaries)
+    /** Default constructor. The textures are drawn at the size they appear (see Textures). */
+    public Player(final Bitmap texture, final Bitmap bulletTexture, final RectangleArea boundaries, final float screenWidth)
     {
-        // Set the super constructor
-        super(null, false, ColliderShape.RECTANGLE, 0);
-        // Set the variables
-        this.bulletSpawner = new BulletSpawner(this, new Bullet(BulletType.PLAYER, context), new Vector2(0, -35), 2, boundaries, context);
-        this.screenWidth = new DisplayUtilities(context).getScreenSize().maxX;
-        // Load the texture
-        Bitmap texture = BitmapFactory.decodeResource(context.getResources(), R.drawable.shapeship);
-        // Set the texture
-        this.setTexture(texture);
+        super(texture, false, ColliderShape.RECTANGLE, 0);
+        final Vector2 margins = new Vector2(0, -BULLET_GAP * bulletTexture.getHeight());
+        this.bulletSpawner = new BulletSpawner(this, new Bullet(BulletType.PLAYER, bulletTexture), margins, 2, boundaries, null);
+        this.screenWidth = screenWidth;
     }
 
     // --- Function(s)

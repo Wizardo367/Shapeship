@@ -1,12 +1,11 @@
 package harishbhagat.shapeship.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.activity.ComponentActivity;
 import android.os.Bundle;
 
-import harishbhagat.shapeship.R;
 import harishbhagat.shapeship.game.GameSurfaceView;
 
-public class GameActivity extends AppCompatActivity
+public class GameActivity extends ComponentActivity
 {
     // Create the gameview
     private GameSurfaceView gsv;
@@ -15,7 +14,6 @@ public class GameActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_game);
 
         // Create the game loop
         gsv = new GameSurfaceView(this);
@@ -35,5 +33,12 @@ public class GameActivity extends AppCompatActivity
     {
         super.onResume();
         gsv.resume();
+    }
+
+    @Override
+    protected void onDestroy()
+    {
+        gsv.release();
+        super.onDestroy();
     }
 }

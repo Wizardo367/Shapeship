@@ -38,15 +38,16 @@ android {
 
     lint {
         // Records the problems the 2016 code already had, so that only new ones fail the build.
-        // The sw-only drawables (MissingDefaultResource) go in step 3.
         baseline = file('lint-baseline.xml')
     }
 }
 
 dependencies {
-    // 1.8 needs minSdk 23. Step 3 removes AppCompat.
-    implementation 'androidx.appcompat:appcompat:1.7.1'
-    // appcompat pulls in two Kotlin standard library versions; the BOM aligns them.
+    // ComponentActivity and EdgeToEdge, which keep content clear of the system bars on Android 15
+    // and later. The activities don't need AppCompat: the app has no action bar or support widgets.
+    // 1.12 needs minSdk 23.
+    implementation 'androidx.activity:activity:1.11.0'
+    // The activity library pulls in two Kotlin standard library versions; the BOM aligns them.
     implementation platform('org.jetbrains.kotlin:kotlin-bom:1.8.22')
 
     testImplementation 'junit:junit:4.13.2'

@@ -1,167 +1,117 @@
 package harishbhagat.shapeship.audio;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.media.AudioAttributes;
 import android.media.MediaPlayer;
-import android.provider.MediaStore;
-import android.util.Log;
+import android.media.SoundPool;
 
-import java.util.HashMap;
-import java.util.Vector;
+import java.util.EnumMap;
+import java.util.Map;
 
 import harishbhagat.shapeship.R;
 
 /**
- * Used to manage music and sound effects.
+ * Plays the background music and the sound effects.
+ *
+ * The sound effects are short, so they're decoded once into a SoundPool, which plays them with
+ * little delay and can overlap them. They stay loaded for the life of the app, so an explosion
+ * that starts as the game ends still finishes on the menu. The music streams from a MediaPlayer,
+ * which the game releases when it closes.
  *
  * Created by Harish on 24/04/2016.
  */
-public class Audio
+public final class Audio
 {
-    // Member(s)
+    // --- Member(s)
 
-    private static Audio instance = new Audio();
+    /** The most sound effects that play at once. */
+    private static final int MAX_STREAMS = 4;
 
-    private static HashMap<Sound, Integer> mediaPlayerReferences;
-    private static Vector<MediaPlayer> mediaPlayers;
+    // Holds the application context only, which lives as long as the app does
+    @SuppressLint("StaticFieldLeak")
+    private static Audio instance;
 
-    private static SharedPreferences preferences;
+    private final Context context;
+    private final SoundPool soundPool;
+    private final Map<Sound, Integer> soundIds = new EnumMap<>(Sound.class);
+    private MediaPlayer music;
 
-    // Constructor(s)
+    // Set on the UI thread and read on the game thread
+    private volatile float musicVolume = 1;
+    private volatile float effectsVolume = 1;
 
-    /**
-     * Default constructor.
-     */
-    private Audio()
+    // --- Constructor(s)
+
+    private Audio(final Context context)
     {
-        // Initialisation
-        mediaPlayerReferences = new HashMap<Sound, Integer>();
-        mediaPlayers = new Vector<MediaPlayer>();
+        this.context = context;
+        final AudioAttributes attributes = new AudioAttributes.Builder()
+                .setUsage(AudioAttributes.USAGE_GAME)
+                .setContentType(AudioAttributes.CONTENT_TYPE_SONIFICATION)
+                .build();
+        soundPool = new SoundPool.Builder().setMaxStreams(MAX_STREAMS).setAudioAttributes(attributes).build();
+        soundIds.put(Sound.EXPLOSION, soundPool.load(context, R.raw.explosion, 1));
+        soundIds.put(Sound.SHOOT, soundPool.load(context, R.raw.shoot, 1));
     }
 
-    // Function(s)
+    // --- Function(s)
 
-    /**
-     * Used to retrieve the id number of a sound.
-     */
-    private static Integer getSoundID(Sound sound)
+    /** Returns the app's audio, loading the sound effects the first time. */
+    public static synchronized Audio get(final Context context)
     {
-        if (sound == Sound.BACKGROUND_MUSIC)
-            return R.raw.space_trip;
-        else if (sound == Sound.EXPLOSION)
-            return R.raw.explosion;
-        else if (sound == Sound.SHOOT)
-             return R.raw.shoot;
-        else
-            // Error
-            return null;
-    }
-
-    /**
-     * Used to retrieve the class instance
-     */
-    public static Audio getInstance()
-    {
+        if (instance == null) instance = new Audio(context.getApplicationContext());
         return instance;
     }
 
-    /**
-     * Used to retireve the volume of the background music or general sound effects. Returns 100 if not found.
-     */
-    public static int getVolume(Context context, AudioType audioType)
+    /** Converts a volume setting from 0 to 100 into a player volume from 0 to 1. */
+    static float toPlayerVolume(final int percent)
     {
-        // Get the key
-        String key = (audioType== AudioType.MUSIC) ? context.getString(R.string.musicVolumeID) : context.getString(R.string.sfxVolumeID);
-        // Get the volume
-        preferences = context.getSharedPreferences("shapeship_preferences", Context.MODE_PRIVATE);
-        return preferences.getInt(key, 100);
+        return Math.max(0, Math.min(percent, 100)) / 100f;
     }
 
-    /**
-     * Used to load a sound
-     */
-    public static boolean loadSound(Context context, Sound sound)
+    // --- Method(s)
+
+    /** Reads the music and sound effect volumes chosen in Settings; both default to 100. */
+    public void loadVolumes(final SharedPreferences preferences)
     {
-        // Get the sound ID
-        Integer soundID = getSoundID(sound);
-        if (soundID == null) return false;
-
-        // Load the sound
-        mediaPlayers.add(MediaPlayer.create(context, soundID));
-
-        // Reference the media player
-        mediaPlayerReferences.put(sound, mediaPlayers.size() - 1);
-
-        return true;
+        musicVolume = toPlayerVolume(preferences.getInt(context.getString(R.string.musicVolumeID), 100));
+        effectsVolume = toPlayerVolume(preferences.getInt(context.getString(R.string.sfxVolumeID), 100));
+        if (music != null) music.setVolume(musicVolume, musicVolume);
     }
 
-    /**
-     * Used to set the volume of the background music or general sound effects.
-     */
-    public static boolean setVolume(Context context, AudioType audioType, final int volume)
+    /** Plays a sound effect. One that hasn't finished loading is skipped. */
+    public void play(final Sound sound)
     {
-        boolean musicPlayerFound = false;
+        final Integer id = soundIds.get(sound);
+        if (id != null) soundPool.play(id, effectsVolume, effectsVolume, 1, 0, 1f);
+    }
 
-        // Set the volume
-        for (MediaPlayer mediaPlayer : mediaPlayers)
+    /** Starts the background music, or carries on from where it was paused. It loops. */
+    public void startMusic()
+    {
+        if (music == null)
         {
-            if (audioType == AudioType.MUSIC)
-            {
-                if (mediaPlayer == mediaPlayers.get(mediaPlayerReferences.get(Sound.BACKGROUND_MUSIC)))
-                {
-                    float formattedVolume = (float) volume / 100;
-                    mediaPlayer.setVolume(formattedVolume, formattedVolume);
-                    musicPlayerFound = true;
-                }
-                if (musicPlayerFound) break;
-            }
-            else if (audioType == AudioType.SFX)
-            {
-                if (mediaPlayer != mediaPlayers.get(mediaPlayerReferences.get(Sound.BACKGROUND_MUSIC)))
-                {
-                    float formattedVolume = (float) volume / 100;
-                    mediaPlayer.setVolume(formattedVolume, formattedVolume);
-                }
-            }
-            if (musicPlayerFound) break;
+            music = MediaPlayer.create(context, R.raw.space_trip);
+            if (music == null) return;
+            music.setLooping(true);
         }
-
-        return true;
+        music.setVolume(musicVolume, musicVolume);
+        music.start();
     }
 
-    /** Used to pause a sound. */
-    public static boolean pauseSound(Sound sound)
+    /** Pauses the background music. */
+    public void pauseMusic()
     {
-        // Get reference
-        final Integer reference = mediaPlayerReferences.get(sound);
-        // Check for failure
-        if (reference == null) return false;
-        // Pause the sound
-        mediaPlayers.get(reference).pause();
-        return true;
+        if (music != null && music.isPlaying()) music.pause();
     }
 
-    /** Used to play a pre-loaded sound. */
-    public static boolean playSound(Sound sound)
+    /** Stops the background music and frees its player; the next game starts the track again. */
+    public void releaseMusic()
     {
-        // Get reference
-        final Integer reference = mediaPlayerReferences.get(sound);
-        // Check for failure
-        if (reference == null) return false;
-        // Play the sound
-        mediaPlayers.get(reference).start();
-        return true;
-    }
-
-    /** Used to release a sound from memory. */
-    public static boolean releaseSound(Sound sound)
-    {
-        // Get reference
-        final Integer reference = mediaPlayerReferences.get(sound);
-        // Check for failure
-        if (reference == null) return false;
-        // Release the sound
-        mediaPlayers.get(reference).release();
-        return true;
+        if (music == null) return;
+        music.release();
+        music = null;
     }
 }

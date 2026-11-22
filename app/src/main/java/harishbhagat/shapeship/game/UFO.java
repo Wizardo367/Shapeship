@@ -1,15 +1,12 @@
 package harishbhagat.shapeship.game;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.util.Log;
 
 import java.sql.Time;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
-import harishbhagat.shapeship.R;
 import harishbhagat.shapeship.graphics.Sprite;
 import harishbhagat.shapeship.maths.RectangleArea;
 import harishbhagat.shapeship.maths.Vector2;
@@ -24,7 +21,6 @@ public class UFO extends Sprite implements Cannon
 {
     // --- Member(s)
 
-    private Bitmap texture;
     private BulletSpawner bulletSpawner;
     private int currentInterval;
     private long lastShot;
@@ -33,15 +29,12 @@ public class UFO extends Sprite implements Cannon
     // --- Constructor(s)
 
     /** Default constructor. */
-    public UFO(Context context, final RectangleArea boundaries)
+    public UFO(final Bitmap texture, final Bitmap bulletTexture, final RectangleArea boundaries)
     {
-        super(null, true, ColliderShape.RECTANGLE, 250);
-        // Load the texture
-        texture = BitmapFactory.decodeResource(context.getResources(), R.drawable.ufo);
-        this.setTexture(texture);
+        super(texture, true, ColliderShape.RECTANGLE, 250);
         // Set the variables
         this.boundaries = boundaries;
-        this.bulletSpawner = new BulletSpawner(this, new Bullet(BulletType.ENEMY, context), new Vector2(0, 35), 1, boundaries, context);
+        this.bulletSpawner = new BulletSpawner(this, new Bullet(BulletType.ENEMY, bulletTexture), new Vector2(0, 35), 1, boundaries, null);
         currentInterval = 3;
         lastShot = System.nanoTime();
     }

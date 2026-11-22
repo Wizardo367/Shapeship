@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Redrawn from the 2016 bitmap: fourteen facets sharing their corners, in the bitmap's colours. Kept for the UFO enemy, which the game does not use yet. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="UnusedResources"
+    android:width="23dp"
+    android:height="80dp"
+    android:viewportWidth="43"
+    android:viewportHeight="150">
+    <path
+        android:fillColor="#3928AD"
+        android:pathData="M0,0 43,0 43,150 0,150Z" />
+    <path
+        android:fillColor="#4733CD"
+        android:pathData="M0,0 43,0 43,25.6Z" />
+    <path
+        android:fillColor="#3E2DBC"
+        android:pathData="M0,0 43,25.6 0,17Z" />
+    <path
+        android:fillColor="#3D2BB8"
+        android:pathData="M0,17 43,25.6 0,43Z" />
+    <path
+        android:fillColor="#422FC4"
+        android:pathData="M0,43 43,25.6 43,51 25,51Z" />
+    <path
+        android:fillColor="#3E2DBC"
+        android:pathData="M25,51 43,51 43,68.7Z" />
+    <path
+        android:fillColor="#3D2BB8"
+        android:pathData="M0,43 25,51 43,68.7 17,77.6Z" />
+    <path
+        android:fillColor="#3928AD"
+        android:pathData="M17,77.6 43,68.7 43,111.5Z" />
+    <path
+        android:fillColor="#302297"
+        android:pathData="M0,43 17,77.6 0,94.7Z" />
+    <path
+        android:fillColor="#3727A7"
+        android:pathData="M17,77.6 43,111.5 0,94.7Z" />
+    <path
+        android:fillColor="#32239A"
+        android:pathData="M0,94.7 43,111.5 24.8,136.8 0,112Z" />
+    <path
+        android:fillColor="#302297"
+        android:pathData="M43,111.5 43,150 24.8,136.8Z" />
+    <path
+        android:fillColor="#2D1F8E"
+        android:pathData="M0,112 24.8,136.8 0,137Z" />
+    <path
+        android:fillColor="#2F2092"
+        android:pathData="M24.8,136.8 43,150 0,150Z" />
+    <path
+        android:fillColor="#2C1F8B"
+        android:pathData="M0,137 24.8,136.8 0,150Z" />
+</vector>

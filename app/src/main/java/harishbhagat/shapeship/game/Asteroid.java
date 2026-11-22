@@ -1,15 +1,8 @@
 package harishbhagat.shapeship.game;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Log;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 
-import harishbhagat.shapeship.R;
 import harishbhagat.shapeship.graphics.Sprite;
-import harishbhagat.shapeship.maths.Vector2;
 import harishbhagat.shapeship.physics.ColliderShape;
 
 /**
@@ -21,27 +14,14 @@ public class Asteroid extends Sprite
 {
     // --- Member(s)
 
-    private Bitmap texture;
+    /** An asteroid's width as a fraction of the screen width. */
+    public static final float WIDTH_FRACTION = 0.11f;
 
     // --- Constructor(s)
 
-    /** Default constructor. */
-    public Asteroid(Context context)
+    /** Default constructor. The texture is drawn at the size the asteroid appears (see Textures). */
+    public Asteroid(Bitmap texture)
     {
-        super(null, true, ColliderShape.CIRCLE, 50);
-        // Load and scale the texture
-        texture = BitmapFactory.decodeResource(context.getResources(), R.drawable.asteroid);
-        this.setTexture(texture);
-        this.scale(new Vector2(0.5f, 0.5f));
-    }
-
-    // --- Method(s)
-
-    /** Overridden method for updating the object. */
-    @Override
-    public void update(final float deltaTime)
-    {
-        // Perform physics operations in super method
-        super.update(deltaTime);
+        super(texture, true, ColliderShape.CIRCLE, 50);
     }
 }

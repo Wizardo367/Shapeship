@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Redrawn from the 2016 bitmap: fourteen facets sharing their corners, in the bitmap's colours. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="23dp"
+    android:height="80dp"
+    android:viewportWidth="43"
+    android:viewportHeight="150">
+    <path
+        android:fillColor="#C30202"
+        android:pathData="M0,0 43,0 43,150 0,150Z" />
+    <path
+        android:fillColor="#EA0505"
+        android:pathData="M0,0 43,0 43,25.6Z" />
+    <path
+        android:fillColor="#D40404"
+        android:pathData="M0,0 43,25.6 0,17Z" />
+    <path
+        android:fillColor="#D00303"
+        android:pathData="M0,17 43,25.6 0,43Z" />
+    <path
+        android:fillColor="#DC0404"
+        android:pathData="M0,43 43,25.6 43,51 25,51Z" />
+    <path
+        android:fillColor="#D40404"
+        android:pathData="M25,51 43,51 43,68.7Z" />
+    <path
+        android:fillColor="#D00303"
+        android:pathData="M0,43 25,51 43,68.7 17,77.6Z" />
+    <path
+        android:fillColor="#C30202"
+        android:pathData="M17,77.6 43,68.7 43,111.5Z" />
+    <path
+        android:fillColor="#AB0000"
+        android:pathData="M0,43 17,77.6 0,94.7Z" />
+    <path
+        android:fillColor="#BC0202"
+        android:pathData="M17,77.6 43,111.5 0,94.7Z" />
+    <path
+        android:fillColor="#AE0101"
+        android:pathData="M0,94.7 43,111.5 24.8,136.8 0,112Z" />
+    <path
+        android:fillColor="#AB0000"
+        android:pathData="M43,111.5 43,150 24.8,136.8Z" />
+    <path
+        android:fillColor="#A00000"
+        android:pathData="M0,112 24.8,136.8 0,137Z" />
+    <path
+        android:fillColor="#A50000"
+        android:pathData="M24.8,136.8 43,150 0,150Z" />
+    <path
+        android:fillColor="#9E0000"
+        android:pathData="M0,137 24.8,136.8 0,150Z" />
+</vector>

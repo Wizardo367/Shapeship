@@ -7,14 +7,14 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.activity.ComponentActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import harishbhagat.shapeship.R;
 
-public class SplashActivity extends AppCompatActivity
+public class SplashActivity extends ComponentActivity
 {
     @Override
     protected void onCreate(Bundle savedInstanceState)

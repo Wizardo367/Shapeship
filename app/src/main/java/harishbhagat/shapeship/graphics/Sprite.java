@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.util.Log;
 
 import harishbhagat.shapeship.maths.Angle;
 import harishbhagat.shapeship.physics.Collidable;
@@ -21,7 +20,7 @@ public class Sprite extends Collidable implements Cloneable
     // --- Member(s)
 
     protected Bitmap texture;
-    private Matrix matrix;
+    private Matrix matrix; /** Reused each frame to place, scale and turn the texture. */
     private float rotation;
     private Vector2 acceleration;
     private Vector2 position;
@@ -84,8 +83,8 @@ public class Sprite extends Collidable implements Cloneable
         return texture;
     }
 
-    /** Returns the sprite's transformation matrix. */
-    public Matrix getMatrix() { return matrix; }
+    /** Returns the matrix used to draw the sprite, for tests. */
+    Matrix drawMatrix() { return matrix; }
 
     /** Returns the sprite's position. */
     public Vector2 getPosition()
@@ -125,13 +124,18 @@ public class Sprite extends Collidable implements Cloneable
         this.velocity = this.velocity.add(amount);
     }
 
-    /** Used to define how the sprite should be drawn to the canvas. */
+    /**
+     * Used to define how the sprite should be drawn to the canvas: centred on its position, then
+     * scaled and turned about its centre. The texture itself is never changed.
+     */
     public void draw(Canvas canvas, Paint paint)
     {
-        // Position the sprite at origin (0.5, 0.5) instead of (0, 0)
-        final Vector2 newPosition = new Vector2(position.x - (texture.getWidth() / 2), position.y - (texture.getHeight() / 2));
-        // Draw the sprite
-        canvas.drawBitmap(texture, newPosition.x, newPosition.y, paint);
+        final float width = texture.getWidth() * scale.x;
+        final float height = texture.getHeight() * scale.y;
+        matrix.setScale(scale.x, scale.y);
+        matrix.postTranslate(position.x - width / 2, position.y - height / 2);
+        if (rotation != 0) matrix.postRotate(rotation, position.x, position.y);
+        canvas.drawBitmap(texture, matrix, paint);
     }
 
     /** Used to move the sprite in relation to it's current position. */
@@ -147,32 +151,22 @@ public class Sprite extends Collidable implements Cloneable
         if (y) { this.velocity.y *= -1; }
     }
 
-    /**
-     * Used to rotate the sprite.
-     * Note: Can cause memory errors.
-     * */
+    /** Used to rotate the sprite by the given number of degrees, clockwise. It turns when drawn. */
     public void rotate(float angle)
     {
-        // TODO Fix OutOfMemory Error
-        // Validate the angle
-        if (angle <= 0) return;
-        rotation += angle;
-        rotation = Angle.Normalise360(rotation);
-        // Rotate the bitmap
-        matrix.postRotate(angle);
-        if (texture != null) texture = Bitmap.createBitmap(texture, 0, 0, texture.getWidth(), texture.getHeight(), matrix, true);
+        rotation = Angle.Normalise360(rotation + angle);
     }
 
-    /** Used to scale the sprite. */
+    /**
+     * Used to scale the sprite. It's scaled when drawn, so for sharp edges render the texture at
+     * the size it's shown instead (see Textures).
+     */
     public void scale(Vector2 scalar)
     {
-        // Scale the texture
-        matrix.postScale(scalar.x, scalar.y);
         scale.x *= scalar.x;
         scale.y *= scalar.y;
-        texture = Bitmap.createBitmap(texture, 0, 0, texture.getWidth(), texture.getHeight(), matrix, true);
-        // Match the bounding box to the scaled texture
-        this.boundingBoxSize = new Vector2(texture.getWidth(), texture.getHeight());
+        // The bounding box follows the drawn size
+        if (boundingBoxSize != null) boundingBoxSize = new Vector2(boundingBoxSize.x * scalar.x, boundingBoxSize.y * scalar.y);
     }
 
     /** Used to set the position of the sprite. */
@@ -181,25 +175,17 @@ public class Sprite extends Collidable implements Cloneable
         this.position = position;
     }
 
-    /**
-     * Used to set the rotation of the sprite.
-     * Note: Can cause memory errors.
-     * */
+    /** Used to set the rotation of the sprite, clamped to ±90 degrees. It turns when drawn. */
     public void setRotation(float angle)
     {
-        // Normalise the angle
         this.rotation = Angle.Normalise180(angle);
-        // Rotate the bitmap
-        matrix.setRotate(this.rotation);
-        texture = Bitmap.createBitmap(texture, 0, 0, texture.getWidth(), texture.getHeight(), matrix, true);
     }
 
-    /** Used to set the scale of the sprite. */
+    /** Used to set the scale of the sprite. It's scaled when drawn. */
     public void setScale(Vector2 scalar)
     {
-        // Scale the texture
-        matrix.setScale(scalar.x, scalar.y);
-        this.scale = scalar;
+        this.scale = new Vector2(scalar);
+        if (texture != null) boundingBoxSize = new Vector2(texture.getWidth() * scalar.x, texture.getHeight() * scalar.y);
     }
 
     /** Used to modify the velocity of a sprite so that it travels towards a target. */
@@ -208,10 +194,10 @@ public class Sprite extends Collidable implements Cloneable
         this.velocity.rotate(-this.position.angleBetween(target));
     }
 
-    /** Used to set the texture of a sprite. */
+    /** Used to set the texture of a sprite. The bounding box matches the texture at the current scale. */
     public void setTexture(Bitmap texture)
     {
-        this.boundingBoxSize = new Vector2(texture.getWidth(), texture.getHeight());
+        this.boundingBoxSize = new Vector2(texture.getWidth() * scale.x, texture.getHeight() * scale.y);
         this.texture = texture;
     }
 

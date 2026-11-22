@@ -2,14 +2,14 @@ package harishbhagat.shapeship.activities;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.activity.ComponentActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
 import harishbhagat.shapeship.R;
 
-public class HelpActivity extends AppCompatActivity
+public class HelpActivity extends ComponentActivity
 {
 
     @Override

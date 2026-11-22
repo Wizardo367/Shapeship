@@ -1,16 +1,13 @@
 package harishbhagat.shapeship.game;
 
-import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 
-import harishbhagat.shapeship.R;
 import harishbhagat.shapeship.graphics.Sprite;
 import harishbhagat.shapeship.maths.Vector2;
 import harishbhagat.shapeship.physics.ColliderShape;
 
 /**
- * Container class for asteroid sprites.
+ * Container class for bullet sprites.
  *
  * Created by Harish Bhagat on 30/03/2016.
  */
@@ -18,23 +15,18 @@ public class Bullet extends Sprite
 {
     // --- Member(s)
 
-    private Bitmap texture;
+    /** A bullet's width as a fraction of the screen width. */
+    public static final float WIDTH_FRACTION = 0.013f;
+
     private final BulletType bulletType;
 
     // --- Constructor(s)
 
-    /** Default constructor. */
-    public Bullet(BulletType bulletType, Context context)
+    /** Default constructor. The texture is drawn at the size the bullet appears (see Textures). */
+    public Bullet(BulletType bulletType, Bitmap texture)
     {
-        super(null, true, ColliderShape.RECTANGLE, 1);
-        // Set the variables
+        super(texture, true, ColliderShape.RECTANGLE, 1);
         this.bulletType = bulletType;
-        // Set the texture
-        final int bulletID = (bulletType == BulletType.PLAYER) ? R.drawable.bullet : R.drawable.enemy_bullet;
-        texture = BitmapFactory.decodeResource(context.getResources(), bulletID);
-        this.setTexture(texture);
-        // Scale the bullet
-        this.scale(new Vector2(0.2f, 0.2f));
     }
 
     // --- Function(s)

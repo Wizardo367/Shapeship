@@ -1,6 +1,7 @@
 package harishbhagat.shapeship.game;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 
 import java.util.Random;
 
@@ -22,10 +23,10 @@ public class AsteroidSpawner extends RandomSpawner
 
     // --- Constructor(s)
 
-    /** Default constructor. */
-    public AsteroidSpawner(Context context, final int maxSpawn, final RectangleArea boundaries, final RectangleArea screen)
+    /** Default constructor. The texture is drawn at the size the asteroids appear (see Textures). */
+    public AsteroidSpawner(Context context, final Bitmap texture, final int maxSpawn, final RectangleArea boundaries, final RectangleArea screen)
     {
-        this(new Asteroid(context), maxSpawn, boundaries, screen, new Random(), context);
+        this(new Asteroid(texture), maxSpawn, boundaries, screen, new Random(), context);
     }
 
     /** Constructor that takes the asteroid and the source of randomness, for tests. */

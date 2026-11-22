@@ -7,69 +7,77 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
-import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.os.Process;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
-import java.text.DecimalFormat;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import harishbhagat.shapeship.R;
 import harishbhagat.shapeship.activities.MenuActivity;
 import harishbhagat.shapeship.activities.PauseActivity;
 import harishbhagat.shapeship.audio.Audio;
-import harishbhagat.shapeship.audio.AudioType;
 import harishbhagat.shapeship.audio.Sound;
-import harishbhagat.shapeship.graphics.Axis2D;
-import harishbhagat.shapeship.graphics.DisplayUtilities;
 import harishbhagat.shapeship.graphics.Sprite;
+import harishbhagat.shapeship.graphics.Textures;
 import harishbhagat.shapeship.maths.RectangleArea;
 import harishbhagat.shapeship.maths.Vector2;
 import harishbhagat.shapeship.physics.ColliderShape;
 import harishbhagat.shapeship.physics.Collision;
-import harishbhagat.shapeship.physics.CollisionInfo;
 
 /**
  * The main view used by the game.
  *
+ * The game runs on its own thread. It builds the level once the surface has a size, since
+ * sprites are sized as fractions of the surface, then updates and draws one frame at a time.
+ *
  * Created by Harish Bhagat on 26/03/2016.
  */
-public class GameSurfaceView extends SurfaceView implements Runnable
+public class GameSurfaceView extends SurfaceView implements Runnable, SurfaceHolder.Callback
 {
     // --- Member(s)
 
-    // Written by the UI thread in pause() and read by the game thread every frame, so volatile
+    private static final int TARGET_FPS = 60;
+    /** How long to wait before checking again for a surface to draw on. */
+    private static final long SURFACE_WAIT_MILLIS = 16;
+    private static final int MAX_ASTEROIDS = 7;
+    /** The pause button's width, and its gap from the screen's edges, as fractions of the screen width. */
+    private static final float PAUSE_BUTTON_WIDTH = 0.11f;
+    private static final float EDGE_MARGIN = 0.05f;
+    /** The gap below the ship, as a fraction of the screen height. */
+    private static final float PLAYER_BOTTOM_MARGIN = 0.05f;
+    /** How far past the screen sprites may go before they're removed, so that asteroids can spawn out of sight. */
+    private static final float BOUNDARY_SCALE = 1.2f;
+
+    private final Context context;
+    private final SurfaceHolder holder;
+    private final SharedPreferences preferences;
+    private final Audio audio;
+    private final Typeface boldTypeface;
+    private final Paint paint = new Paint(Paint.FILTER_BITMAP_FLAG);
+    private final FrameTimer frameTimer = new FrameTimer(TARGET_FPS);
+
+    // Written by the UI thread and read by the game thread every frame, so volatile
     private volatile boolean running = false;
-    private Bitmap backgroundImage;
-    private Context context;
-    private DisplayUtilities displayUtilities;
-    private GameTimer gameTimer;
-    private float deltaTime;
-    private RectangleArea screenDimensions;
-    private SurfaceHolder holder;
-    private Paint paint = new Paint();
+    private volatile int surfaceWidth = 0;
+    private volatile int surfaceHeight = 0;
     private Thread thread = null;
-    private RectangleArea boundaries;
 
-    // Get preferences
-    SharedPreferences preferences;
-
-    // Game elements
-    private Audio audio;
-    private int score;
+    // The level, built and used only on the game thread
+    private Bitmap backgroundImage;
     private Player player;
     private AsteroidSpawner asteroidSpawner;
+    private Sprite pauseButton;
+    private ScoreDisplay scoreDisplay;
+    private int score;
+
     // The latest tap not yet handled, handed from the UI thread to the game thread
     private final AtomicReference<Vector2> pendingTap = new AtomicReference<>();
-
-    // UI elements
-    private Sprite pauseButton;
 
     // --- Constructor(s)
 
@@ -80,58 +88,14 @@ public class GameSurfaceView extends SurfaceView implements Runnable
     {
         super(context);
 
-        // Set the variables
-        audio = Audio.getInstance();
         this.context = context;
-        displayUtilities = new DisplayUtilities(context);
-        gameTimer = GameTimer.getInstance();
-        gameTimer.setThread(thread);
-        holder = getHolder(); // Used for the ScreenView
-        this.screenDimensions = displayUtilities.getScreenSize();
-        this.boundaries = screenDimensions.scale(1.2f); // Padding allows for elements to spawn off-screen without being deleted
+        holder = getHolder();
+        holder.addCallback(this);
         preferences = context.getSharedPreferences("shapeship_preferences", Context.MODE_PRIVATE);
+        boldTypeface = Typeface.createFromAsset(context.getAssets(), "fonts/seguibl.ttf");
 
-        // Load and scale the background
-        backgroundImage = BitmapFactory.decodeResource(getResources(), R.drawable.background_0);
-        final Vector2 bgSize = new Vector2(backgroundImage.getWidth(), backgroundImage.getHeight());
-        Matrix matrix = new Matrix();
-        matrix.setScale(displayUtilities.getScreenSize().maxX / bgSize.x, displayUtilities.getScreenSize().maxY / bgSize.y);
-        backgroundImage = Bitmap.createBitmap(backgroundImage, 0, 0, (int) bgSize.x, (int) bgSize.y, matrix, true);
-
-        // Game elements
-
-        // Load audio
-        audio.loadSound(context, Sound.BACKGROUND_MUSIC);
-        audio.loadSound(context, Sound.EXPLOSION);
-        audio.loadSound(context, Sound.SHOOT);
-
-        // Set the player's volume preferences
-        audio.setVolume(context, AudioType.MUSIC, audio.getVolume(context, AudioType.MUSIC));
-        audio.setVolume(context, AudioType.SFX, audio.getVolume(context, AudioType.SFX));
-
-        // Play background music
-        audio.playSound(Sound.BACKGROUND_MUSIC);
-
-        // Initialise, scale and position the player
-        player = new Player(context, boundaries);
-        player.scale(new Vector2((float) 0.6f, 0.6f));
-        score = 0;
-        Bitmap playerBitmap = player.getBitmap();
-        Vector2 playerSize = new Vector2(playerBitmap.getWidth(), playerBitmap.getHeight());
-        // Positions are centres: centre the player horizontally, 5% of the screen height above the bottom
-        player.setPosition(new Vector2(screenDimensions.maxX / 2, screenDimensions.maxY - (playerSize.y / 2) - displayUtilities.percentToPixels(5, Axis2D.Y)));
-
-        // Initialise the asteroid spawner
-        asteroidSpawner = new AsteroidSpawner(context, 7, boundaries, screenDimensions);
-
-        // UI elements
-
-        // Create and position pause button
-        pauseButton = new Sprite(BitmapFactory.decodeResource(getResources(), R.drawable.pause_button), false, ColliderShape.RECTANGLE, 0);
-        pauseButton.scale(new Vector2(0.5f, 0.5f));
-        final Bitmap pauseButtonBitmap = pauseButton.getBitmap();
-        final Vector2 pauseButtonSize = new Vector2(pauseButtonBitmap.getWidth(), pauseButtonBitmap.getHeight());
-        pauseButton.setPosition(new Vector2(screenDimensions.maxX - (pauseButtonSize.x / 2) - displayUtilities.percentToPixels(5, Axis2D.X), (pauseButtonSize.y / 2) + displayUtilities.percentToPixels(5, Axis2D.X)));
+        audio = Audio.get(context);
+        audio.loadVolumes(preferences);
 
         // Record taps for the game thread. The listener is set once, here on the UI thread.
         setOnTouchListener((view, event) ->
@@ -144,54 +108,60 @@ public class GameSurfaceView extends SurfaceView implements Runnable
 
     // --- Method(s)
 
-    /**
-     * Used for drawing to the canvas.
-     */
+    /** Builds the level for a surface of the given size. Runs on the game thread. */
+    private void buildLevel(final int width, final int height)
+    {
+        final RectangleArea screen = new RectangleArea(0, width, 0, height);
+        final RectangleArea boundaries = screen.scale(BOUNDARY_SCALE);
+
+        // Scale the background to fill the screen, once
+        final Bitmap background = BitmapFactory.decodeResource(getResources(), R.drawable.background_0);
+        backgroundImage = Bitmap.createScaledBitmap(background, width, height, true);
+        if (backgroundImage != background) background.recycle();
+
+        // Draw each sprite's vector at the size it appears on this screen
+        final Bitmap shipTexture = Textures.render(context, R.drawable.shapeship, Textures.pixels(width, Player.WIDTH_FRACTION));
+        final Bitmap bulletTexture = Textures.render(context, R.drawable.bullet, Textures.pixels(width, Bullet.WIDTH_FRACTION));
+        final Bitmap asteroidTexture = Textures.render(context, R.drawable.asteroid, Textures.pixels(width, Asteroid.WIDTH_FRACTION));
+        final Bitmap pauseTexture = Textures.render(context, R.drawable.pause_button, Textures.pixels(width, PAUSE_BUTTON_WIDTH));
+
+        // Positions are centres: centre the player horizontally, above the bottom of the screen
+        player = new Player(shipTexture, bulletTexture, boundaries, width);
+        player.setPosition(new Vector2(width / 2f, height - shipTexture.getHeight() / 2f - PLAYER_BOTTOM_MARGIN * height));
+
+        asteroidSpawner = new AsteroidSpawner(context, asteroidTexture, MAX_ASTEROIDS, boundaries, screen);
+
+        // The pause button sits in the top-right corner
+        pauseButton = new Sprite(pauseTexture, false, ColliderShape.RECTANGLE, 0);
+        final float margin = EDGE_MARGIN * width;
+        pauseButton.setPosition(new Vector2(width - pauseTexture.getWidth() / 2f - margin, pauseTexture.getHeight() / 2f + margin));
+
+        scoreDisplay = new ScoreDisplay(boldTypeface, width);
+        score = 0;
+    }
+
+    /** Used for drawing to the canvas. */
     protected void drawCanvas(Canvas canvas)
     {
-        // Draw to the canvas
+        // The background is opaque and fills the screen, so it replaces the previous frame
+        canvas.drawBitmap(backgroundImage, 0, 0, null);
 
-        // Asteroids
         for (Sprite asteroid : asteroidSpawner.entities)
             asteroid.draw(canvas, paint);
 
-        // Player
         player.draw(canvas, paint);
 
-        // Player bullets
         for (Sprite bullet : player.bulletSpawner.entities)
             bullet.draw(canvas, paint);
 
-        // Draw UI
-
-        final String scoreString = new DecimalFormat("000000").format(score);
-        final Integer screenWidth = (int) screenDimensions.maxX;
-
-        // Score
-
-        // Get typeface
-        Typeface boldTypeface = Typeface.createFromAsset(context.getAssets(), "fonts/seguibl.ttf");
-
-        paint.setTypeface(boldTypeface);
-        paint.setColor(Color.parseColor("#bc0202"));
-        paint.setTextSize(10);
-        final String scoreTitle = "SCORE";
-        final float scoreTitleWidth = paint.measureText(scoreTitle);
-        canvas.drawText(scoreTitle, (screenWidth - scoreTitleWidth) / 2, 40, paint);
-        paint.setColor(Color.WHITE);
-        paint.setTextSize(20);
-        final float scoreWidth = paint.measureText(scoreString);
-        canvas.drawText(scoreString, (screenWidth - scoreWidth) / 2, 65, paint);
-
-        // Pause button
+        scoreDisplay.draw(canvas, score);
         pauseButton.draw(canvas, paint);
     }
 
     /** Used to pause the view. */
     public void pause()
     {
-        // Pause audio
-        audio.pauseSound(Sound.BACKGROUND_MUSIC);
+        audio.pauseMusic();
 
         running = false;
 
@@ -207,78 +177,84 @@ public class GameSurfaceView extends SurfaceView implements Runnable
             }
             thread = null;
         }
-        gameTimer.setThread(null);
     }
 
     /** Used to resume the view, if paused. */
     public void resume()
     {
-        // Resume audio
-        audio.playSound(Sound.BACKGROUND_MUSIC);
+        audio.startMusic();
 
         running = true;
-        thread = new Thread(this);
+        thread = new Thread(this, "Game");
         thread.start();
-        gameTimer.setThread(thread);
+    }
+
+    /** Frees the music player. Call when the game closes. */
+    public void release()
+    {
+        audio.releaseMusic();
     }
 
     /** Used to run the game loop. */
     public void run()
     {
-        // Remove the conflict between the UI thread and the game thread (Run the thread in the background)
-        android.os.Process.setThreadPriority(android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        // Render at display priority: the default background priority starves the game of CPU time
+        Process.setThreadPriority(Process.THREAD_PRIORITY_DISPLAY);
 
-        // Store start time
-        long lastTime = 0;
-        long currentTime = System.currentTimeMillis();
+        // Time spent paused doesn't count towards the first frame
+        frameTimer.reset();
 
-        // Check that the activity isn't paused
-        while(running)
+        while (running)
         {
-            // Check the validity of the surface
-            if (!holder.getSurface().isValid()) continue;
+            // Wait for a surface to draw on, without spinning
+            final int width = surfaceWidth;
+            final int height = surfaceHeight;
+            if (!holder.getSurface().isValid() || width == 0 || height == 0)
+            {
+                if (!sleep(TimeUnit.MILLISECONDS.toNanos(SURFACE_WAIT_MILLIS))) return;
+                frameTimer.reset();
+                continue;
+            }
 
-            // Get delta time
-            deltaTime = gameTimer.getDeltaTime();
+            if (player == null) buildLevel(width, height);
 
-            // Spawn asteroids
+            final float deltaTime = frameTimer.tick(System.nanoTime());
+
+            // The surface can go between the check above and here
+            final Canvas canvas = holder.lockCanvas();
+            if (canvas == null)
+            {
+                if (!sleep(TimeUnit.MILLISECONDS.toNanos(SURFACE_WAIT_MILLIS))) return;
+                continue;
+            }
             try
             {
-                if (asteroidSpawner.spawn())
-                    asteroidSpawner.entities.lastElement().setTarget(player.getPosition(), deltaTime);
+                update(deltaTime);
+                drawCanvas(canvas);
             }
-            catch (CloneNotSupportedException e) { Log.e("SPAWNER ERROR", "CloneNotSupportedException"); };
-
-            // Get the canvas
-            Canvas canvas = holder.lockCanvas();
-            // Clear the canvas
-            canvas.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR);
-            canvas.drawBitmap(backgroundImage, 0, 0, paint);
-            // Handle the latest tap, if there is one
-            final Vector2 tapLocation = pendingTap.getAndSet(null);
-            if (tapLocation != null)
+            finally
             {
-                // Check if the pause button was tapped
-                if (Collision.PointAABBIntersectionTest(pauseButton, tapLocation))
-                {
-                    // Pause game
-                    Intent intent = new Intent(context, PauseActivity.class);
-                    context.startActivity(intent);
-                }
-                else
-                {
-                    // Move the player
-                    final Vector2 playerPosition = player.getPosition();
-                    player.setPosition(new Vector2(tapLocation.x, playerPosition.y));
-                    // Fire a bullet, and play the shooting sound effect if one was fired
-                    if (player.fire())
-                        audio.playSound(Sound.SHOOT);
-                }
+                holder.unlockCanvasAndPost(canvas);
             }
-            // Update and draw the canvas
-            this.updateCanvas(deltaTime);
-            this.drawCanvas(canvas);
-            holder.unlockCanvasAndPost(canvas);
+
+            // Hold the target frame rate
+            if (!sleep(frameTimer.sleepNanos(System.nanoTime()))) return;
+        }
+    }
+
+    /** Sleeps the game thread. Returns false if it was interrupted, which stops the loop. */
+    private static boolean sleep(final long nanos)
+    {
+        if (nanos <= 0) return true;
+        try
+        {
+            Thread.sleep(TimeUnit.NANOSECONDS.toMillis(nanos), (int) (nanos % 1_000_000));
+            return true;
+        }
+        catch (InterruptedException e)
+        {
+            Thread.currentThread().interrupt();
+            return false;
         }
     }
 
@@ -288,8 +264,7 @@ public class GameSurfaceView extends SurfaceView implements Runnable
         // Stop the loop, so that this runs only once
         running = false;
 
-        // Play explosion sound effect
-        audio.playSound(Sound.EXPLOSION);
+        audio.play(Sound.EXPLOSION);
 
         // Save the score if it's higher than the existing score
         HighScore.saveIfHigher(preferences, score);
@@ -304,15 +279,39 @@ public class GameSurfaceView extends SurfaceView implements Runnable
         });
     }
 
-    /** Used to update the canvas */
-    private void updateCanvas(final float deltaTime)
+    /** Handles the latest tap, then moves the sprites and checks for collisions. */
+    private void update(final float deltaTime)
     {
+        // Spawn asteroids, aimed at the player
+        try
+        {
+            if (asteroidSpawner.spawn())
+                asteroidSpawner.entities.lastElement().setTarget(player.getPosition(), deltaTime);
+        }
+        catch (CloneNotSupportedException e) { Log.e("SPAWNER ERROR", "CloneNotSupportedException"); }
+
+        // Handle the latest tap, if there is one
+        final Vector2 tapLocation = pendingTap.getAndSet(null);
+        if (tapLocation != null)
+        {
+            if (Collision.PointAABBIntersectionTest(pauseButton, tapLocation))
+            {
+                post(() -> context.startActivity(new Intent(context, PauseActivity.class)));
+            }
+            else
+            {
+                // Move the player
+                player.setPosition(new Vector2(tapLocation.x, player.getPosition().y));
+                // Fire a bullet, and play the shooting sound effect if one was fired
+                if (player.fire())
+                    audio.play(Sound.SHOOT);
+            }
+        }
+
         // Update the game elements
         asteroidSpawner.update(deltaTime);
         player.update(deltaTime);
         player.bulletSpawner.update(deltaTime);
-
-        // Check for collisions
 
         // Player & Asteroid
         for (Sprite asteroid : asteroidSpawner.entities)
@@ -328,26 +327,26 @@ public class GameSurfaceView extends SurfaceView implements Runnable
         final int hits = BulletHits.removeHits(player.bulletSpawner.entities, asteroidSpawner.entities, deltaTime);
         if (hits > 0)
         {
-            // Play explosion sound effect
-            audio.playSound(Sound.EXPLOSION);
-            // Add score
+            audio.play(Sound.EXPLOSION);
             score += 10 * hits;
         }
 
         // Asteroid & Asteroid
-        for (Sprite asteroidA : asteroidSpawner.entities)
-        {
-            for (Sprite asteroidB : asteroidSpawner.entities)
-            {
-                // Check that asteroidA and asteroidB aren't the same object
-                if (asteroidA == asteroidB) continue;
-                // Check for a colllision
-                CollisionInfo collisionInfo = Collision.HasCollidedWith(asteroidA, asteroidB, deltaTime);
-
-                if (collisionInfo.collision)
-                    // Resolve collision
-                    Collision.Collide(asteroidA, asteroidB, collisionInfo, deltaTime);
-            }
-        }
+        Collision.ResolveAll(asteroidSpawner.entities, deltaTime);
     }
+
+    // --- SurfaceHolder.Callback
+
+    @Override
+    public void surfaceCreated(SurfaceHolder holder) {}
+
+    @Override
+    public void surfaceChanged(SurfaceHolder holder, int format, int width, int height)
+    {
+        surfaceWidth = width;
+        surfaceHeight = height;
+    }
+
+    @Override
+    public void surfaceDestroyed(SurfaceHolder holder) {}
 }

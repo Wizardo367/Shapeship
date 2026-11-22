@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Redrawn by hand from the 2016 bitmap. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="80dp"
+    android:height="80dp"
+    android:viewportWidth="150"
+    android:viewportHeight="150">
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M22,0H128A22,22 0 0 1 150,22V128A22,22 0 0 1 128,150H22A22,22 0 0 1 0,128V22A22,22 0 0 1 22,0ZM22,5A17,17 0 0 0 5,22V128A17,17 0 0 0 22,145H128A17,17 0 0 0 145,128V22A17,17 0 0 0 128,5Z" />
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M30,23L119,75L30,127Z" />
+</vector>

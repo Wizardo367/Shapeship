@@ -1,5 +1,7 @@
 package harishbhagat.shapeship.physics;
 
+import java.util.List;
+
 import harishbhagat.shapeship.maths.RectangleArea;
 import harishbhagat.shapeship.maths.Vector2;
 import harishbhagat.shapeship.graphics.Sprite;
@@ -140,6 +142,27 @@ public class Collision
         otherSprite.setVelocity(otherSpriteVelocity.subtract(impluse.divide(otherSprite.mass)));
 
         return true;
+    }
+
+    /**
+     * Tests each pair of sprites once and resolves the pairs that collide. Returns the number
+     * resolved. Testing (a, b) and then (b, a) as well would double the work for nothing, since
+     * Collide changes both sprites.
+     */
+    public static int ResolveAll(final List<? extends Sprite> sprites, final float deltaTime)
+    {
+        int resolved = 0;
+        for (int i = 0; i < sprites.size(); ++i)
+        {
+            final Sprite sprite = sprites.get(i);
+            for (int j = i + 1; j < sprites.size(); ++j)
+            {
+                final Sprite otherSprite = sprites.get(j);
+                final CollisionInfo collisionInfo = HasCollidedWith(sprite, otherSprite, deltaTime);
+                if (collisionInfo.collision && Collide(sprite, otherSprite, collisionInfo, deltaTime)) ++resolved;
+            }
+        }
+        return resolved;
     }
 
     /** Performs a suitable collision test between two sprites. */

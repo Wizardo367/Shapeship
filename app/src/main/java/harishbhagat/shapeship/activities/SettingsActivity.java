@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
-import androidx.appcompat.app.AppCompatActivity;
+import androidx.activity.ComponentActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 
 import harishbhagat.shapeship.R;
 
-public class SettingsActivity extends AppCompatActivity implements SeekBar.OnSeekBarChangeListener
+public class SettingsActivity extends ComponentActivity implements SeekBar.OnSeekBarChangeListener
 {
     // Member(s)
 

@@ -24,279 +24,6 @@
     </issue>
 
     <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;asteroid&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/asteroid.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;asteroid&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/asteroid.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;asteroid&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/asteroid.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;background_0&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/background_0.jpg"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;background_0&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/background_0.jpg"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;background_0&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/background_0.jpg"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;bullet&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/bullet.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;bullet&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/bullet.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;bullet&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/bullet.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;enemy_bullet&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/enemy_bullet.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;enemy_bullet&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/enemy_bullet.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;enemy_bullet&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/enemy_bullet.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;help_button&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/help_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;help_button&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/help_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;help_button&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/help_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;menu_screen&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/menu_screen.jpg"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;menu_screen&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/menu_screen.jpg"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;menu_screen&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/menu_screen.jpg"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;pause_button&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/pause_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;pause_button&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/pause_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;pause_button&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/pause_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;play_button&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/play_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;play_button&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/play_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;play_button&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/play_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;return_button&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/return_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;return_button&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/return_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;return_button&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/return_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;settings_button&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/settings_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;settings_button&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/settings_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;settings_button&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/settings_button.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;shapeship&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/shapeship.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;shapeship&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/shapeship.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;shapeship&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/shapeship.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;single_tap&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/single_tap.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;single_tap&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/single_tap.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;single_tap&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/single_tap.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;ufo&quot; in drawable-sw320dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw320dp/ufo.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;ufo&quot; in drawable-sw480dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw480dp/ufo.png"/>
-    </issue>
-
-    <issue
-        id="MissingDefaultResource"
-        message="The drawable &quot;ufo&quot; in drawable-sw600dp has no declaration in the base `drawable` folder or in a `drawable-`*density*`dpi` folder; this can lead to crashes when the drawable is queried in a configuration that does not match this qualifier">
-        <location
-            file="src/main/res/drawable-sw600dp/ufo.png"/>
-    </issue>
-
-    <issue
         id="UnusedAttribute"
         message="Attribute `appCategory` is only used in API level 26 and higher (current min is 21)"
         errorLine1="        android:appCategory=&quot;game&quot;"
@@ -310,7 +37,7 @@
     <issue
         id="CustomSplashScreen"
         message="The application should not provide its own launch screen"
-        errorLine1="public class SplashActivity extends AppCompatActivity"
+        errorLine1="public class SplashActivity extends ComponentActivity"
         errorLine2="             ~~~~~~~~~~~~~~">
         <location
             file="src/main/java/harishbhagat/shapeship/activities/SplashActivity.java"
@@ -320,12 +47,12 @@
 
     <issue
         id="GradleDependency"
-        message="A newer version of androidx.appcompat:appcompat than 1.7.1 is available: 1.8.0"
-        errorLine1="    implementation &apos;androidx.appcompat:appcompat:1.7.1&apos;"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        message="A newer version of androidx.activity:activity than 1.11.0 is available: 1.13.0"
+        errorLine1="    implementation &apos;androidx.activity:activity:1.11.0&apos;"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="build.gradle"
-            line="48"
+            line="49"
             column="20"/>
     </issue>
 
@@ -525,94 +252,6 @@
             file="src/main/AndroidManifest.xml"
             line="48"
             column="13"/>
-    </issue>
-
-    <issue
-        id="UsingOnClickInXml"
-        message="Use databinding or explicit wiring of click listener in code"
-        errorLine1="            android:onClick=&quot;returnToMenu&quot;/>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_help.xml"
-            line="87"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UsingOnClickInXml"
-        message="Use databinding or explicit wiring of click listener in code"
-        errorLine1="                android:onClick=&quot;showHelp&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_menu.xml"
-            line="80"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UsingOnClickInXml"
-        message="Use databinding or explicit wiring of click listener in code"
-        errorLine1="                android:onClick=&quot;startGame&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_menu.xml"
-            line="93"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UsingOnClickInXml"
-        message="Use databinding or explicit wiring of click listener in code"
-        errorLine1="                android:onClick=&quot;showSettings&quot;"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_menu.xml"
-            line="105"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UsingOnClickInXml"
-        message="Use databinding or explicit wiring of click listener in code"
-        errorLine1="                android:onClick=&quot;returnToGame&quot;/>"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_pause.xml"
-            line="76"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UsingOnClickInXml"
-        message="Use databinding or explicit wiring of click listener in code"
-        errorLine1="                android:onClick=&quot;returnToMenu&quot;/>"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_pause.xml"
-            line="115"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="UsingOnClickInXml"
-        message="Use databinding or explicit wiring of click listener in code"
-        errorLine1="            android:onClick=&quot;returnToMenu&quot;/>"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_settings.xml"
-            line="106"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="UsingOnClickInXml"
-        message="Use databinding or explicit wiring of click listener in code"
-        errorLine1="        android:onClick=&quot;showMenu&quot;"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="src/main/res/layout/activity_splash.xml"
-            line="10"
-            column="9"/>
     </issue>
 
     <issue
@@ -825,13 +464,6 @@
     </issue>
 
     <issue
-        id="UnusedResources"
-        message="The resource `R.drawable.menu_screen` appears to be unused">
-        <location
-            file="src/main/res/drawable-sw320dp/menu_screen.jpg"/>
-    </issue>
-
-    <issue
         id="UselessLeaf"
         message="This `LinearLayout` view is unnecessary (no children, no `background`, no `id`, no `style`)"
         errorLine1="        &lt;LinearLayout"
@@ -860,7 +492,7 @@
         errorLine2="                           ^">
         <location
             file="src/main/java/harishbhagat/shapeship/game/GameSurfaceView.java"
-            line="137"
+            line="101"
             column="28"/>
     </issue>
 

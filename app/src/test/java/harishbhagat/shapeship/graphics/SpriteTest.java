@@ -23,7 +23,7 @@ public class SpriteTest
         copy.getVelocity().rotate(90);
         copy.boundingBoxSize.x = 1;
 
-        assertNotSame(original.getMatrix(), copy.getMatrix());
+        assertNotSame(original.drawMatrix(), copy.drawMatrix());
         assertEquals(10, original.getPosition().x, DELTA);
         assertEquals(0, original.getVelocity().x, DELTA);
         assertEquals(50, original.getVelocity().y, DELTA);
@@ -52,5 +52,34 @@ public class SpriteTest
         sprite.update(0.5f);
         assertEquals(15, sprite.getPosition().x, DELTA);
         assertEquals(-30, sprite.getPosition().y, DELTA);
+    }
+
+    @Test
+    public void scalingScalesTheBoundingBox()
+    {
+        final Sprite sprite = circle(0, 0, 100);
+        sprite.scale(new Vector2(0.5f, 2));
+        assertEquals(50, sprite.boundingBoxSize.x, DELTA);
+        assertEquals(200, sprite.boundingBoxSize.y, DELTA);
+        assertEquals(0.5f, sprite.getScale().x, DELTA);
+        assertEquals(2, sprite.getScale().y, DELTA);
+    }
+
+    @Test
+    public void rotatesEitherWay()
+    {
+        // The 2016 sprite ignored turns of zero degrees or less
+        final Sprite sprite = circle(0, 0, 10);
+        sprite.rotate(30);
+        sprite.rotate(-50);
+        assertEquals(340, sprite.getRotation(), DELTA);
+    }
+
+    @Test
+    public void setRotationClampsToAQuarterTurn()
+    {
+        final Sprite sprite = circle(0, 0, 10);
+        sprite.setRotation(120);
+        assertEquals(90, sprite.getRotation(), DELTA);
     }
 }

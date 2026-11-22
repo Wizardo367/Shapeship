@@ -8,6 +8,8 @@ import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+
 import harishbhagat.shapeship.graphics.Sprite;
 import harishbhagat.shapeship.maths.Vector2;
 
@@ -162,5 +164,35 @@ public class CollisionTest
 
         assertFalse(Collision.Collide(a, b, test(a, b), 1 / 30f));
         assertVector(-10, 0, a.getVelocity());
+    }
+
+    @Test
+    public void resolveAllResolvesEachCollidingPairOnce()
+    {
+        // Two asteroids closing on each other, and one well away from both
+        final Sprite left = circle(0, 0, 100);
+        final Sprite right = circle(90, 0, 100);
+        final Sprite far = circle(1000, 1000, 100);
+        left.setVelocity(new Vector2(50, 0));
+        right.setVelocity(new Vector2(-50, 0));
+
+        assertEquals(1, Collision.ResolveAll(Arrays.asList(left, right, far), 1 / 30f));
+
+        // Equal masses with restitution 0.8 swap 80% of their speed: they now move apart
+        assertVector(-40, 0, left.getVelocity());
+        assertVector(40, 0, right.getVelocity());
+        assertVector(0, 0, far.getVelocity());
+    }
+
+    @Test
+    public void resolveAllLeavesSpritesMovingApartAlone()
+    {
+        final Sprite left = circle(0, 0, 100);
+        final Sprite right = circle(90, 0, 100);
+        left.setVelocity(new Vector2(-50, 0));
+        right.setVelocity(new Vector2(50, 0));
+
+        assertEquals(0, Collision.ResolveAll(Arrays.asList(left, right), 1 / 30f));
+        assertVector(-50, 0, left.getVelocity());
     }
 }
