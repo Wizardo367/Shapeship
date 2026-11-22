@@ -1,15 +1,21 @@
 package harishbhagat.shapeship;
 
-import android.app.Application;
-import android.test.ApplicationTestCase;
+import static org.junit.Assert.assertEquals;
 
-/**
- * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
- */
-public class ApplicationTest extends ApplicationTestCase<Application>
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.platform.app.InstrumentationRegistry;
+
+import org.junit.Test;
+import org.junit.runner.RunWith;
+
+/** Checks that the app installs and starts under its own package name. */
+@RunWith(AndroidJUnit4.class)
+public class ApplicationTest
 {
-    public ApplicationTest()
+    @Test
+    public void usesAppPackageName()
     {
-        super(Application.class);
+        assertEquals("harishbhagat.shapeship",
+                InstrumentationRegistry.getInstrumentation().getTargetContext().getPackageName());
     }
 }

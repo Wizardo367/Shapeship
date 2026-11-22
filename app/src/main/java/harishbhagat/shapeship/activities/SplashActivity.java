@@ -7,7 +7,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -21,6 +21,7 @@ public class SplashActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
+        SystemBars.keepContentClear(this);
 
         // Set the fonts
         Typeface boldTypeface = Typeface.createFromAsset(getAssets(), "fonts/seguibl.ttf");

@@ -1,6 +1,6 @@
 package harishbhagat.shapeship.activities;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import harishbhagat.shapeship.R;
@@ -20,6 +20,7 @@ public class GameActivity extends AppCompatActivity
         // Create the game loop
         gsv = new GameSurfaceView(this);
         setContentView(gsv);
+        SystemBars.keepContentClear(this);
     }
 
     @Override

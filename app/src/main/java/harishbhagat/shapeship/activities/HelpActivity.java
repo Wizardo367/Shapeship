@@ -2,7 +2,7 @@ package harishbhagat.shapeship.activities;
 
 import android.content.Intent;
 import android.graphics.Typeface;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
@@ -17,6 +17,7 @@ public class HelpActivity extends AppCompatActivity
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_help);
+        SystemBars.keepContentClear(this);
 
         // Set the fonts
         Typeface boldTypeface = Typeface.createFromAsset(getAssets(), "fonts/seguibl.ttf");
