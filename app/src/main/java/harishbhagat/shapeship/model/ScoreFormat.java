@@ -1,4 +1,4 @@
-package harishbhagat.shapeship.game;
+package harishbhagat.shapeship.model;
 
 /** Formats scores the way the game shows them: six digits with leading zeros. */
 public final class ScoreFormat

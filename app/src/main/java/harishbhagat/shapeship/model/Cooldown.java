@@ -1,4 +1,4 @@
-package harishbhagat.shapeship.game;
+package harishbhagat.shapeship.model;
 
 /**
  * Used to limit how often an action can happen, such as firing a cannon.

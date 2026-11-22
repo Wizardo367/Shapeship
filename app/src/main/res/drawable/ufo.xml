@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Redrawn from the 2016 bitmap: one polygon per flat-coloured facet, over the outline. Kept for the UFO enemy, which the game does not use yet. -->
+<!-- Redrawn from the 2016 bitmap: one polygon per flat-coloured facet, over the outline. Not used yet: kept for a future enemy (the 2016 UFO code was removed in the restructure). -->
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="UnusedResources"

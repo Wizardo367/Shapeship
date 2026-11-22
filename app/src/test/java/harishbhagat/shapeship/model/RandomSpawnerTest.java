@@ -1,6 +1,6 @@
-package harishbhagat.shapeship.game;
+package harishbhagat.shapeship.model;
 
-import static harishbhagat.shapeship.TestSprites.circle;
+import static harishbhagat.shapeship.TestBodies.circle;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -9,7 +9,7 @@ import org.junit.Test;
 
 import java.util.Random;
 
-import harishbhagat.shapeship.graphics.Sprite;
+import harishbhagat.shapeship.physics.Body;
 import harishbhagat.shapeship.maths.RectangleArea;
 import harishbhagat.shapeship.maths.Vector2;
 
@@ -21,10 +21,10 @@ public class RandomSpawnerTest
 
     private static RandomSpawner spawner(final int maxSpawn, final RectangleArea boundaries)
     {
-        return new RandomSpawner(circle(0, 0, SIZE), maxSpawn, boundaries, SCREEN, new Random(1), null);
+        return new RandomSpawner(circle(0, 0, SIZE), maxSpawn, boundaries, SCREEN, new Random(1));
     }
 
-    /** True if any part of a sprite centred here would be on screen. */
+    /** True if any part of a body centred here would be on screen. */
     private static boolean visible(final Vector2 centre)
     {
         final float half = SIZE / 2;
@@ -52,19 +52,19 @@ public class RandomSpawnerTest
     }
 
     @Test
-    public void spawnedSpritesDoNotOverlap() throws CloneNotSupportedException
+    public void spawnedBodiesDoNotOverlap()
     {
         final RandomSpawner spawner = spawner(20, BOUNDARIES);
         while (spawner.spawn()) { }
 
-        for (Sprite a : spawner.entities)
-            for (Sprite b : spawner.entities)
+        for (Body a : spawner.entities)
+            for (Body b : spawner.entities)
                 if (a != b)
                     assertTrue(Math.abs(a.getPosition().x - b.getPosition().x) >= SIZE || Math.abs(a.getPosition().y - b.getPosition().y) >= SIZE);
     }
 
     @Test
-    public void stopsAtTheMaximum() throws CloneNotSupportedException
+    public void stopsAtTheMaximum()
     {
         final RandomSpawner spawner = spawner(3, BOUNDARIES);
         assertTrue(spawner.spawn());
@@ -75,7 +75,7 @@ public class RandomSpawnerTest
     }
 
     @Test
-    public void givesUpInsteadOfLoopingForeverWhenThereIsNoRoom() throws CloneNotSupportedException
+    public void givesUpInsteadOfLoopingForeverWhenThereIsNoRoom()
     {
         // The whole spawn area is on screen, so no position is valid
         final RandomSpawner spawner = spawner(5, SCREEN);
@@ -84,16 +84,16 @@ public class RandomSpawnerTest
     }
 
     @Test
-    public void asteroidsSpawnAboveTheirLimitAndFallTowardsThePlayer() throws CloneNotSupportedException
+    public void asteroidsSpawnAboveTheirLimitAndFallTowardsThePlayer()
     {
-        final AsteroidSpawner spawner = new AsteroidSpawner(circle(0, 0, SIZE), 7, BOUNDARIES, SCREEN, new Random(2), null);
+        final AsteroidSpawner spawner = new AsteroidSpawner(circle(0, 0, SIZE), 7, BOUNDARIES, SCREEN, new Random(2));
 
         for (int round = 0; round < 50; ++round)
         {
             spawner.entities.clear();
             while (spawner.spawn()) { }
 
-            for (Sprite asteroid : spawner.entities)
+            for (Body asteroid : spawner.entities)
             {
                 assertTrue(asteroid.getPosition().y <= SCREEN.maxY * AsteroidSpawner.MAX_SPAWN_HEIGHT);
                 assertFalse(visible(asteroid.getPosition()));

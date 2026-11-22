@@ -4,7 +4,6 @@ import java.util.List;
 
 import harishbhagat.shapeship.maths.RectangleArea;
 import harishbhagat.shapeship.maths.Vector2;
-import harishbhagat.shapeship.graphics.Sprite;
 
 /**
  * Used to perform tests for collisions and resolve them.
@@ -21,15 +20,15 @@ public class Collision
     // --- Function(s)
 
     /**
-     * Performs an AABB collision test between two sprites.
-     * A sprite's position is its centre, as in Sprite.draw.
-     * The normal points from sprite to otherSprite, along the axis with the smaller overlap.
+     * Performs an AABB collision test between two bodies.
+     * A body's position is its centre.
+     * The normal points from body to otherBody, along the axis with the smaller overlap.
      */
-    private static CollisionInfo AABBCollisionTest(Sprite sprite, Sprite otherSprite)
+    private static CollisionInfo AABBCollisionTest(Body body, Body otherBody)
     {
-        final Vector2 difference = otherSprite.getPosition().subtract(sprite.getPosition());
-        final float overlapX = (sprite.boundingBoxSize.x + otherSprite.boundingBoxSize.x) / 2 - Math.abs(difference.x);
-        final float overlapY = (sprite.boundingBoxSize.y + otherSprite.boundingBoxSize.y) / 2 - Math.abs(difference.y);
+        final Vector2 difference = otherBody.getPosition().subtract(body.getPosition());
+        final float overlapX = (body.boundingBoxSize.x + otherBody.boundingBoxSize.x) / 2 - Math.abs(difference.x);
+        final float overlapY = (body.boundingBoxSize.y + otherBody.boundingBoxSize.y) / 2 - Math.abs(difference.y);
 
         // Boxes that only touch don't collide
         if (overlapX <= 0 || overlapY <= 0)
@@ -41,14 +40,14 @@ public class Collision
     }
 
     /**
-     * Performs an AABB-circle collision test between two sprites.
-     * The normal points from sprite to otherSprite.
+     * Performs an AABB-circle collision test between two bodies.
+     * The normal points from body to otherBody.
      */
-    private static CollisionInfo AABBCircleCollisionTest(Sprite sprite, Sprite otherSprite)
+    private static CollisionInfo AABBCircleCollisionTest(Body body, Body otherBody)
     {
-        // Check the colliders of both sprites
-        final Sprite rect = (sprite.getColliderShape() == ColliderShape.RECTANGLE) ? sprite : otherSprite;
-        final Sprite circle = (rect == sprite) ? otherSprite : sprite;
+        // Check the colliders of both bodies
+        final Body rect = (body.getColliderShape() == ColliderShape.RECTANGLE) ? body : otherBody;
+        final Body circle = (rect == body) ? otherBody : body;
 
         // Circle centre minus rectangle centre
         final Vector2 difference = circle.getPosition().subtract(rect.getPosition());
@@ -85,23 +84,23 @@ public class Collision
             penetration = radius + Math.min(gapX, gapY);
         }
 
-        // Make the normal point from sprite to otherSprite
-        if (rect != sprite)
+        // Make the normal point from body to otherBody
+        if (rect != body)
             normal = normal.multiply(-1);
 
         return new CollisionInfo(true, penetration, normal);
     }
 
     /**
-     * Performs a circle collision test between two sprites.
-     * The normal points from sprite to otherSprite.
+     * Performs a circle collision test between two bodies.
+     * The normal points from body to otherBody.
      */
-    private static CollisionInfo CircleCollisionTest(Sprite sprite, Sprite otherSprite)
+    private static CollisionInfo CircleCollisionTest(Body body, Body otherBody)
     {
         // Subtract the two positions
-        final Vector2 positionSubtraction = otherSprite.getPosition().subtract(sprite.getPosition());
+        final Vector2 positionSubtraction = otherBody.getPosition().subtract(body.getPosition());
         // Get the sum of the radii
-        final float radiiSum = Radius(sprite) + Radius(otherSprite);
+        final float radiiSum = Radius(body) + Radius(otherBody);
 
         // Check for a collision. Comparing squares avoids a square root when there's none.
         if (positionSubtraction.dot(positionSubtraction) >= radiiSum * radiiSum)
@@ -114,85 +113,85 @@ public class Collision
         if (magnitude != 0)
             return new CollisionInfo(true, radiiSum - magnitude, positionSubtraction.divide(magnitude));
         else
-            // Both sprites are in the same place
+            // Both bodies are in the same place
             return new CollisionInfo(true, radiiSum, new Vector2(1, 0));
     }
 
     /** Resolves a collision. */
-    public static boolean Collide(Sprite sprite, Sprite otherSprite, CollisionInfo collisionInfo, final float deltaTime)
+    public static boolean Collide(Body body, Body otherBody, CollisionInfo collisionInfo)
     {
-        final Vector2 spriteVelocity = sprite.getVelocity();
-        final Vector2 otherSpriteVelocity = otherSprite.getVelocity();
+        final Vector2 velocity = body.getVelocity();
+        final Vector2 otherVelocity = otherBody.getVelocity();
 
-        final Vector2 subtractionVelocity = spriteVelocity.subtract(otherSpriteVelocity);
+        final Vector2 subtractionVelocity = velocity.subtract(otherVelocity);
         final float contactVelocity = subtractionVelocity.dot(collisionInfo.collisionNormal);
 
         // Check that the objects aren't already moving apart
         if (contactVelocity < 0) return false;
 
         // Calculate restitution
-        final float restitution = Math.min(sprite.restitution, otherSprite.restitution);
+        final float restitution = Math.min(body.restitution, otherBody.restitution);
         // Calculate j
         float j = -(1 + restitution) * contactVelocity;
-        j /= sprite.invMass + otherSprite.invMass;
+        j /= body.invMass + otherBody.invMass;
 
         // Calculate the new velocities
         Vector2 impluse = collisionInfo.collisionNormal.multiply(j);
-        sprite.setVelocity(spriteVelocity.add(impluse.divide(sprite.mass)));
-        otherSprite.setVelocity(otherSpriteVelocity.subtract(impluse.divide(otherSprite.mass)));
+        body.setVelocity(velocity.add(impluse.divide(body.mass)));
+        otherBody.setVelocity(otherVelocity.subtract(impluse.divide(otherBody.mass)));
 
         return true;
     }
 
     /**
-     * Tests each pair of sprites once and resolves the pairs that collide. Returns the number
+     * Tests each pair of bodies once and resolves the pairs that collide. Returns the number
      * resolved. Testing (a, b) and then (b, a) as well would double the work for nothing, since
-     * Collide changes both sprites.
+     * Collide changes both bodies.
      */
-    public static int ResolveAll(final List<? extends Sprite> sprites, final float deltaTime)
+    public static int ResolveAll(final List<? extends Body> bodies)
     {
         int resolved = 0;
-        for (int i = 0; i < sprites.size(); ++i)
+        for (int i = 0; i < bodies.size(); ++i)
         {
-            final Sprite sprite = sprites.get(i);
-            for (int j = i + 1; j < sprites.size(); ++j)
+            final Body body = bodies.get(i);
+            for (int j = i + 1; j < bodies.size(); ++j)
             {
-                final Sprite otherSprite = sprites.get(j);
-                final CollisionInfo collisionInfo = HasCollidedWith(sprite, otherSprite, deltaTime);
-                if (collisionInfo.collision && Collide(sprite, otherSprite, collisionInfo, deltaTime)) ++resolved;
+                final Body otherBody = bodies.get(j);
+                final CollisionInfo collisionInfo = HasCollidedWith(body, otherBody);
+                if (collisionInfo.collision && Collide(body, otherBody, collisionInfo)) ++resolved;
             }
         }
         return resolved;
     }
 
-    /** Performs a suitable collision test between two sprites. */
-    public static CollisionInfo HasCollidedWith(Sprite sprite, Sprite otherSprite, final float deltaTime)
+    /** Performs a suitable collision test between two bodies. */
+    public static CollisionInfo HasCollidedWith(Body body, Body otherBody)
     {
-        if (sprite.getColliderShape() == ColliderShape.CIRCLE && otherSprite.getColliderShape() == ColliderShape.CIRCLE)
-            return CircleCollisionTest(sprite, otherSprite);
-        else if (sprite.getColliderShape() == ColliderShape.RECTANGLE && otherSprite.getColliderShape() == ColliderShape.RECTANGLE)
-            return AABBCollisionTest(sprite, otherSprite);
+        if (body.getColliderShape() == ColliderShape.CIRCLE && otherBody.getColliderShape() == ColliderShape.CIRCLE)
+            return CircleCollisionTest(body, otherBody);
+        else if (body.getColliderShape() == ColliderShape.RECTANGLE && otherBody.getColliderShape() == ColliderShape.RECTANGLE)
+            return AABBCollisionTest(body, otherBody);
         else
-            return AABBCircleCollisionTest(sprite, otherSprite);
+            return AABBCircleCollisionTest(body, otherBody);
     }
 
-    /** Used to determine if a point intersects a sprite's bounding box, edges included. */
-    public static boolean PointAABBIntersectionTest(Sprite sprite, Vector2 point)
+    /** Used to determine if a point intersects a body's bounding box, edges included. */
+    public static boolean PointAABBIntersectionTest(Body body, Vector2 point)
     {
-        final Vector2 halfSize = sprite.boundingBoxSize.divide(2);
-        final Vector2 spritePosition = sprite.getPosition();
+        final Vector2 halfSize = body.boundingBoxSize.divide(2);
+        final Vector2 position = body.getPosition();
 
         // Get bounds
-        final RectangleArea bounds = new RectangleArea(spritePosition.x - halfSize.x, spritePosition.x + halfSize.x, spritePosition.y - halfSize.y, spritePosition.y + halfSize.y);
+        final RectangleArea bounds = new RectangleArea(position.x - halfSize.x, position.x + halfSize.x, position.y - halfSize.y, position.y + halfSize.y);
 
         // The point must be within the bounds on both axes
         return bounds.contains(point);
     }
 
-    /** Used to determine the radius of a sprites bounding box. */
-    private static float Radius(Sprite sprite)
+    /** Used to determine the radius of a body's bounding box. */
+    private static float Radius(Body body)
     {
-        Vector2 boundingBoxSize = sprite.boundingBoxSize;
+        Vector2 boundingBoxSize = body.boundingBoxSize;
         return (boundingBoxSize.x + boundingBoxSize.y) / 4;
     }
 

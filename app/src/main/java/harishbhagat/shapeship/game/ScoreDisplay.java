@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 
+import harishbhagat.shapeship.model.ScoreFormat;
+
 /**
  * Draws the score at the top of the game screen, sized to the screen.
  *

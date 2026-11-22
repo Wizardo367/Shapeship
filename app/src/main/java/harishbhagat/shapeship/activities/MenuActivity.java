@@ -12,7 +12,7 @@ import android.widget.TextView;
 import harishbhagat.shapeship.R;
 import harishbhagat.shapeship.graphics.Fonts;
 import harishbhagat.shapeship.game.HighScore;
-import harishbhagat.shapeship.game.ScoreFormat;
+import harishbhagat.shapeship.model.ScoreFormat;
 
 public class MenuActivity extends ComponentActivity
 {

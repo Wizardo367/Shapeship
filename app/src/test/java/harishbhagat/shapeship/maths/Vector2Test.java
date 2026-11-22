@@ -1,8 +1,13 @@
 package harishbhagat.shapeship.maths;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Test;
+
+import java.util.Collections;
+import java.util.HashSet;
 
 public class Vector2Test
 {
@@ -68,5 +73,26 @@ public class Vector2Test
     public void normalisesToLengthOne()
     {
         assertVector(0.6f, 0.8f, new Vector2(3, 4).normalise());
+    }
+
+    @Test
+    public void equalVectorsAreEqualAsObjects()
+    {
+        // The 2016 equals(Vector2) was an overload, so Object.equals (identity) was used here
+        final Object a = new Vector2(1.5f, -2);
+        final Object b = new Vector2(1.5f, -2);
+        assertEquals(a, b);
+        assertEquals(a.hashCode(), b.hashCode());
+        assertTrue(new HashSet<>(Collections.singletonList(a)).contains(b));
+    }
+
+    @Test
+    public void differentVectorsAreNotEqual()
+    {
+        final Vector2 vector = new Vector2(1, 2);
+        assertNotEquals(vector, new Vector2(2, 1));
+        assertNotEquals(vector, new Vector2(1, 2.001f));
+        assertNotEquals(vector, null);
+        assertNotEquals(vector, "(1.0, 2.0)");
     }
 }

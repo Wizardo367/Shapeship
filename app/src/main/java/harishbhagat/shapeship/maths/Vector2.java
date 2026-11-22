@@ -79,10 +79,32 @@ public class Vector2
         return this.x * comparator.x + this.y * comparator.y;
     }
 
-    /** Used to determine if two vectors are equal. */
-    public boolean equals(Vector2 comparator)
+    /**
+     * Returns true if the other object is a vector with the same coordinates. This overrides
+     * Object.equals, so assertEquals and collections use it; the 2016 version took a Vector2
+     * and so was never called by either. Coordinates compare as Float.equals does (NaN equals
+     * NaN, 0 differs from -0), which keeps equals consistent with hashCode.
+     * Vectors are mutable: don't change one while it's in a hash set or used as a map key.
+     */
+    @Override
+    public boolean equals(final Object other)
     {
-        return (this.x == comparator.x && this.y == comparator.y);
+        if (this == other) return true;
+        if (!(other instanceof Vector2)) return false;
+        final Vector2 vector = (Vector2) other;
+        return Float.compare(x, vector.x) == 0 && Float.compare(y, vector.y) == 0;
+    }
+
+    @Override
+    public int hashCode()
+    {
+        return 31 * Float.hashCode(x) + Float.hashCode(y);
+    }
+
+    @Override
+    public String toString()
+    {
+        return "(" + x + ", " + y + ")";
     }
 
     /** Used to find the magnitude of a vector. */

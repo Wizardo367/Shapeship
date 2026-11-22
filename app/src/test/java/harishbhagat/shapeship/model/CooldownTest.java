@@ -1,4 +1,4 @@
-package harishbhagat.shapeship.game;
+package harishbhagat.shapeship.model;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;

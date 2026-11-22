@@ -1,15 +1,13 @@
-package harishbhagat.shapeship.game;
-
-import android.content.Context;
+package harishbhagat.shapeship.model;
 
 import java.util.Random;
 
-import harishbhagat.shapeship.graphics.Sprite;
 import harishbhagat.shapeship.maths.RectangleArea;
 import harishbhagat.shapeship.maths.Vector2;
+import harishbhagat.shapeship.physics.Body;
 
 /**
- * Used to spawn sprites in random locations within a set area, out of sight of the player.
+ * Used to spawn bodies in random locations within a set area, out of sight of the player.
  *
  * Created by Harish Bhagat on 29/03/2016.
  */
@@ -20,45 +18,43 @@ public class RandomSpawner extends Spawner
     /** How many random positions to try before giving up on a spawn, rather than looping forever. */
     static final int MAX_ATTEMPTS = 50;
 
-    protected final RectangleArea screen; /** The visible area. Sprites spawn wholly outside it. */
+    protected final RectangleArea screen; /** The visible area. Bodies spawn wholly outside it. */
     protected final Random random; /** Source of the random positions. */
 
     // --- Constructor(s)
 
     /** Default constructor. */
-    public RandomSpawner(final Sprite entity, final int maxSpawn, final RectangleArea boundaries, final RectangleArea screen, final Random random, Context context)
+    public RandomSpawner(final Body entity, final int maxSpawn, final RectangleArea boundaries, final RectangleArea screen, final Random random)
     {
-        super(entity, maxSpawn, boundaries, context);
-        // Set the variables
+        super(entity, maxSpawn, boundaries);
         this.screen = screen;
         this.random = random;
     }
 
     // --- Function(s)
 
-    /** Used to spawn a new sprite. Returns false if the spawner is full or no free position was found. */
-    public boolean spawn() throws CloneNotSupportedException
+    /** Used to spawn a new body. Returns false if the spawner is full or no free position was found. */
+    @Override
+    public boolean spawn()
     {
         if (entities.size() >= maxSpawn) return false;
 
         final Vector2 position = getRandomPosition();
         if (position == null) return false;
 
-        // Create a new entity
-        Sprite newEntity = (Sprite) this.entity.clone();
+        final Body newEntity = entity.clone();
         newEntity.setPosition(position);
-        // Add the entity
-        this.entities.addElement(newEntity);
+        entities.add(newEntity);
         return true;
     }
 
-    /** Used to define the area in which sprites may be spawned. */
+    /** Used to define the area in which bodies may be spawned. */
     protected RectangleArea getSpawnArea()
     {
         return boundaries;
     }
 
-    /** Used to generate a random position to which a sprite may be spawned, or null if none was found. */
+    /** Used to generate a random position to which a body may be spawned, or null if none was found. */
     protected Vector2 getRandomPosition()
     {
         final RectangleArea area = getSpawnArea();
@@ -80,22 +76,22 @@ public class RandomSpawner extends Spawner
         return min + random.nextFloat() * (max - min);
     }
 
-    /** Used to validate the random position generated. Positions are sprite centres. */
+    /** Used to validate the random position generated. Positions are body centres. */
     private boolean validatePosition(final Vector2 position)
     {
-        final Vector2 entitySize = this.entity.boundingBoxSize;
+        final Vector2 entitySize = entity.boundingBoxSize;
 
-        // Check that no part of the new sprite would be on screen
+        // Check that no part of the new body would be on screen
         final Vector2 halfSize = entitySize.divide(2);
         final RectangleArea visibleCentres = new RectangleArea(screen.minX - halfSize.x, screen.maxX + halfSize.x, screen.minY - halfSize.y, screen.maxY + halfSize.y);
         if (visibleCentres.contains(position))
             return false;
 
-        // Check that the new sprite won't overlap an existing one
-        for (Sprite entity : this.entities)
+        // Check that the new body won't overlap an existing one
+        for (Body other : entities)
         {
-            final Vector2 entityPosition = entity.getPosition();
-            if (Math.abs(position.x - entityPosition.x) < entitySize.x && Math.abs(position.y - entityPosition.y) < entitySize.y)
+            final Vector2 otherPosition = other.getPosition();
+            if (Math.abs(position.x - otherPosition.x) < entitySize.x && Math.abs(position.y - otherPosition.y) < entitySize.y)
                 return false;
         }
 

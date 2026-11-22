@@ -1,9 +1,9 @@
-package harishbhagat.shapeship.game;
+package harishbhagat.shapeship.model;
 
 import java.util.Iterator;
 import java.util.List;
 
-import harishbhagat.shapeship.graphics.Sprite;
+import harishbhagat.shapeship.physics.Body;
 import harishbhagat.shapeship.physics.Collision;
 
 /**
@@ -21,20 +21,20 @@ final class BulletHits
      * Removes each bullet that has hit a target, along with the target it hit.
      * A bullet destroys at most one target. Returns the number of hits.
      */
-    static int removeHits(final List<Sprite> bullets, final List<Sprite> targets, final float deltaTime)
+    static int removeHits(final List<Body> bullets, final List<Body> targets)
     {
         int hits = 0;
 
         // Removing through the iterators keeps the loops from skipping the item after a removed one
-        final Iterator<Sprite> bulletIterator = bullets.iterator();
+        final Iterator<Body> bulletIterator = bullets.iterator();
         while (bulletIterator.hasNext())
         {
-            final Sprite bullet = bulletIterator.next();
-            final Iterator<Sprite> targetIterator = targets.iterator();
+            final Body bullet = bulletIterator.next();
+            final Iterator<Body> targetIterator = targets.iterator();
 
             while (targetIterator.hasNext())
             {
-                if (Collision.HasCollidedWith(bullet, targetIterator.next(), deltaTime).collision)
+                if (Collision.HasCollidedWith(bullet, targetIterator.next()).collision)
                 {
                     targetIterator.remove();
                     bulletIterator.remove();
